@@ -4,13 +4,16 @@ import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import "../src/styles/globals.css";
+import { Sidebar } from "lucide-react";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
-      <main className="bg-purple-300">
-        <Component {...pageProps} />
-      </main>
+      <div className="flex">
+        <Sidebar>
+          
+        </Sidebar>
+      </div>
     </>
   );
 }
