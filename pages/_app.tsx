@@ -5,14 +5,14 @@ import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import "../src/styles/globals.css";
 import { Sidebar } from "lucide-react";
+import { Card } from 'primereact/card';
+
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <div className="flex">
-        <Sidebar>
-          
-        </Sidebar>
+        <Card /> 
       </div>
     </>
   );
