@@ -2,6 +2,7 @@
 const config = {
   plugins: {
     tailwindcss: {},
+    autoprefixer: {},  // O Autoprefixer é útil para garantir a compatibilidade entre navegadores
   },
 };
 
