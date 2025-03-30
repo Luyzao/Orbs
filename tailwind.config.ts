@@ -15,6 +15,10 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      fontFamily: {
+        poppins: ["Poppins", "sans-serif"],
+        comfortaa: ["Comfortaa", "sans-serif"],
+      },
     },
   },
   plugins: [],
