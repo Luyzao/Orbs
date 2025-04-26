@@ -14,18 +14,18 @@ interface CashFlowBoxProps {
         <div className="relative ml-5 mt-8 sm:ml-8 sm:mt-8 md:ml-8 md:mt-8 lg:ml-8 lg:mt-8 xl:ml-8 xl:mt-8">
 
         {/* Calculo */}
-        <div className="absolute inset-y-0 right-0 translate-x-10 bg-[#383577] w-[160px] sm:w-[310px] md:w-[291px] lg:w-[291px] xl:w-[219] h-[247px] sm:h-[320px] md:h-[320px] lg:h-[320px] xl:h-[320px] mt-3 rounded-md shadow-lg" style={{ borderRadius: '20px' }}>
+        <div className="absolute inset-y-0 right-0 translate-x-10 bg-[#383577] w-[160px] sm:w-[310px] md:w-[310px] lg:w-[310px] xl:w-[310] h-[247px] sm:h-[300px] md:h-[300px] lg:h-[300px] xl:h-[300px] mt-4 rounded-md shadow-lg" style={{ borderRadius: '20px' }}>
 
-        <h2 className="font-poppins text-sm sm:text-xl md:text-xl lg:text-xl xl:text-xl text-start text-[#FFFFFF] ml-3 mt-2 s:mt-2 m:mt-2 lg:mt-2 s:ml-4 m:ml-4 lg:ml-4 "> Total </h2>
+        <h2 className="font-poppins text-sm sm:text-xl md:text-xl lg:text-xl xl:text-xl text-start text-[#FFFFFF] ml-3 mt-3 s:mt-2 m:mt-2 lg:mt-2 s:ml-4 m:ml-4 lg:ml-4 "> Total </h2>
         <p className="font-comfortaa text-lg sm:text-xl md:text-4xl lg:text-4xl xl:text-4xl text-start text-[#FFFFFF] ml-3 s:mt-1 m:mt-1 lg:mt-1 s:ml-4 m:ml-4 lg:ml-4 mb-2"> R$ 00,00 </p>
         
         <h2 className="font-poppins text-sm sm:text-lg md:text-xl lg:text-xl xl:text-xl text-start text-[#FFFFFF] ml-3 s:mt-1 m:mt-1 lg:mt-1 s:ml-4 m:ml-4 lg:ml-4"> Renda extra </h2>
         <p className="font-comfortaa text-lg sm:text-xl md:text-2xl lg:text-2xl xl:text-2xl text-start text-[#FFFFFF] ml-3 s:mt-1 m:mt-1 lg:mt-1 s:ml-4 m:ml-4 lg:ml-4 "> R$ 00,00 </p>
 
-        <h2 className="font-poppins text-sm sm:text-lg md:text-xl lg:text-xl xl:text-xl text-start text-[#FFFFFF] ml-3 mt-1 s:mt-1 m:mt-1 lg:mt-1 s:ml-4 m:ml-4 lg:ml-4"> Outros </h2>
+        <h2 className="font-poppins text-sm sm:text-lg md:text-xl lg:text-xl xl:text-xl text-start text-[#FFFFFF] ml-3  s:mt-1 m:mt-1 lg:mt-1 s:ml-4 m:ml-4 lg:ml-4"> Outros </h2>
         <p className="font-comfortaa text-lg sm:text-xl md:text-2xl lg:text-2xl xl:text-2xl text-start text-[#FFFFFF] ml-3 mt-1 s:mt-1 m:mt-1 lg:mt-1 s:ml-4 m:ml-4 lg:ml-4"> R$ 00,00 </p>
 
-        <h2 className="font-poppins text-sm sm:text-lg md:text-xl lg:text-xl xl:text-xl text-start text-[#FFFFFF] ml-3 mt-1 s:mt-1 m:mt-1 lg:mt-1 s:ml-4 m:ml-4 lg:ml-4"> Imposto de renda </h2>
+        <h2 className="font-poppins text-sm sm:text-lg md:text-xl lg:text-xl xl:text-xl text-start text-[#FFFFFF] ml-3  s:mt-1 m:mt-1 lg:mt-1 s:ml-4 m:ml-4 lg:ml-4"> Imposto de renda </h2>
         <p className="font-comfortaa text-lg sm:text-xl md:text-2xl lg:text-2xl xl:text-2xl text-start text-[#FFFFFF] ml-3 mt-1 s:mt-1 m:mt-1 lg:mt-1 s:ml-4 m:ml-4 lg:ml-4"> R$ 00,00 </p>
        
 
