@@ -9,7 +9,7 @@ export default function calculator() {
         className="h-screen w-full flex justify-between bg-cover bg-center relative" 
         style={{ backgroundColor: '#F0F0F0' }}>
 
-        <CashFlowBox />
+        <CashFlowBox/>
       </div>
 
     </section>
