@@ -3,10 +3,10 @@ import { InputText } from 'primereact/inputtext';
 
 interface SignUpRectangleProps {
     className?: string;
-  }
+}
 
-  const SignUpRectangle: React.FC<SignUpRectangleProps> = () => {
-    const [value, setValue] = useState('');
+const SignUpRectangle: React.FC<SignUpRectangleProps> = () => {
+  const [value, setValue] = useState('');
 
   return (
     <section>
