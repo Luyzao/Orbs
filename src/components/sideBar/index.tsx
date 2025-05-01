@@ -34,7 +34,7 @@ export default function SideBar() {
         <div className={`bg-gray-100 ${colapsado ? "w-20" : "w-48"} px-2 pb-4 pt-6 shadow-xl h-screen flex flex-col items-center justify-between`}>
             <div className="flex flex-col items-center gap-5">
                 {/* Logo ou ícone */}
-                <div className="text-3xl text-gray-800 mb-4">
+                <div className="text-5xl text-gray-800 mb-4">
                     {colapsado ? <GiMoonOrbit /> : "Orbs"}
                 </div>
 
