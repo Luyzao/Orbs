@@ -4,11 +4,13 @@ import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import "../src/styles/globals.css";
+import SideBar from "@/components/sideBar";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
-      <main className="bg-purple-300">
+      <main className="bg-white flex">
+        <SideBar/>
         <Component {...pageProps} />
       </main>
     </>

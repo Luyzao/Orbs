@@ -10,10 +10,14 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  ...compat.extends(
+    "next/core-web-vitals",
+    "next/typescript",
+    "prettier" // <- se estiver usando Prettier
+  ),
   {
     rules: {
-      "@typescript-eslint/no-explicit-any": "on", // Desativa a regra globalmente
+      "@typescript-eslint/no-explicit-any": "off",
     },
   },
 ];
