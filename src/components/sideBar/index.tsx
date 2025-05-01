@@ -31,15 +31,15 @@ export default function SideBar() {
     }, []);
 
     return (
-        <div className={`bg-gray-100 ${colapsado ? "w-20" : "w-48"} px-2 pb-4 pt-6 shadow-xl h-screen flex flex-col items-center justify-between`}>
-            <div className="flex flex-col items-center gap-5">
+        <div className={`bg-gray-100 ${colapsado ? "w-20" : "w-48"} px-2 pb-4 pt-6 shadow-xl h-screen flex flex-col items-center justify-between transition-all`}>
+            <div className="flex flex-col items-center gap-5 transition-all">
                 {/* Logo ou ícone */}
-                <div className="text-5xl text-gray-800 mb-4">
+                <div className="text-5xl text-gray-800 mb-4 transition-all">
                     {colapsado ? <GiMoonOrbit /> : "Orbs"}
                 </div>
 
                 {/* Lista de menus */}
-                <ul className="text-xl flex flex-col gap-3 z-10">
+                <ul className="text-xl flex flex-col gap-3 z-10 transition-all">
                     {menuItens.map((item, index) => (
                         <li
                         key={item.nome}
@@ -57,7 +57,7 @@ export default function SideBar() {
             </div>
 
             {/* Botão sair */}
-            <button className="text-gray-800 flex items-center gap-2 text-xl hover:bg-gray-300 px-3 py-1 rounded-xl">
+            <button className="text-gray-800 flex items-center gap-2 text-xl hover:bg-gray-300 px-3 py-1 rounded-xl transition-all">
                 <i><RxExit /></i>
                 {!colapsado && "Sair"}
             </button>
