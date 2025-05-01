@@ -13,7 +13,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const hideSidebar = router.pathname.startsWith("/auth");
 
   return (
-    <main className="bg-white flex">
+    <main className={`bg-white ${!hideSidebar ? "flex":"" }`}>
       {!hideSidebar && <SideBar />}
       <Component {...pageProps} />
     </main>
