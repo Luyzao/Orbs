@@ -5,6 +5,7 @@ import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import "../src/styles/globals.css";
 
+
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
