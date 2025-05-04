@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { InputText } from 'primereact/inputtext';
+import { useRouter } from 'next/router';
 
 interface SignUpRectangleProps {
   className?: string;
 }
 
 const SignUpRectangle: React.FC<SignUpRectangleProps> = () => {
+
+  const router = useRouter();
 
   const [name, setName] = useState('');
   const [surname, setSurname] = useState('');
@@ -32,6 +35,37 @@ const SignUpRectangle: React.FC<SignUpRectangleProps> = () => {
     setSurnameError(!surnameValid);
 
     return emailValid && passwordValid && nameValid && surnameValid;
+  };
+
+  const onSubmit = async () => {
+    if (!validateForm()) return;
+
+    try {
+      const response = await fetch('http://localhost:3390/api/user/route', {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name: `${name.trim()} ${surname.trim()}`,
+          email: email.trim(),
+          password: password.trim()
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log("Usuário criado:", data.user);
+        alert("Cadastro realizado com sucesso!");
+        router.push('/auth/login');
+      } else {
+        alert(data.message || "Erro ao cadastrar usuário.");
+      }
+    } catch (error) {
+      console.error("Erro na requisição:", error);
+      alert("Erro inesperado ao tentar cadastrar.");
+    }
   };
 
   return (
@@ -95,6 +129,7 @@ const SignUpRectangle: React.FC<SignUpRectangleProps> = () => {
         <div className="flex flex-col relative mb-1">
           <InputText
             id="password"
+            type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-[170px] h-[32px] bg-[#D9D9D9] mt-3 text-[#000000] font-comfortaa text-[10px] placeholder-black py-1 px-3 
@@ -109,13 +144,13 @@ const SignUpRectangle: React.FC<SignUpRectangleProps> = () => {
 
         <div className="flex text-[#000000] font-poppins font-light text-[0.65rem] mt-3 sm:text-[0.7rem] xl: mt-4 xl:text-[0.75rem]">
           <p>Já tem uma conta?</p>
-          <a href="" className="px-1"><span className="text-[#1E195B] underline">Login</span></a>
+          <a href="/auth/login" className="px-1"><span className="text-[#1E195B] underline">Login</span></a>
         </div>
 
         <button onClick={() => {
           if (validateForm()) {
             setSubmitted(true);
-            // Aqui você pode continuar com a lógica de cadastro
+            onSubmit();
           }
         }}
           className="w-[165px] h-[32px] bg-[#252436] font-poppins text-[13px] py-1 mt-3 flex items-center 
