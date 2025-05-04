@@ -6,7 +6,25 @@ interface LoginRectangleProps {
 }
 
 const LoginRectangle: React.FC<LoginRectangleProps> = () => {
-  const [value, setValue] = useState('');
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+
+  const [emailError, setEmailError] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
+
+  const validateForm = () => {
+    const noWhiteSpace = (str: string) => str.trim() === str && str !== '';
+
+    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && noWhiteSpace(email);
+    const passwordValid = noWhiteSpace(password);
+
+    setEmailError(!emailValid);
+    setPasswordError(!passwordValid);
+
+    return emailValid && passwordValid
+  };
   
   return (
     <div className="h-screen flex justify-center items-center bg-cover bg-center" style={{ backgroundImage: "url(/images/background-login.png)", 
@@ -21,30 +39,47 @@ const LoginRectangle: React.FC<LoginRectangleProps> = () => {
       mt-7 md:mt-6 lg:mt-7 mx-auto">Bem-vindo <br/> de volta! </h5>
 
       <div className="flex flex-col items-center">
-        <InputText
-          id="email"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          className="w-[220px] h-[32px] bg-[#EDEDED] mt-3 text-[#000000] font-comfortaa text-[10px] rounded-[8px] placeholder-black py-1 px-2 
-            sm:text-[11px] sm:w-[220px] sm:h-[35px] md:w-[240px] lg:w-[260px] xl:text-[12px]"
-          placeholder="E-mail"
-        />
+
+        <div className="flex flex-col relative mb-2">
+          <InputText
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-[220px] h-[32px] bg-[#EDEDED] mt-3 text-[#000000] font-comfortaa text-[10px] rounded-[8px] placeholder-black py-1 px-2 
+              sm:text-[11px] sm:w-[220px] sm:h-[35px] md:w-[240px] lg:w-[260px] xl:text-[12px] focus:outline-none focus:ring-0 focus:border-transparent"
+            placeholder="E-mail"
+          />
+          {emailError && (
+            <small className="p-error text-[10px] mt-0.5 absolute top-[100%] left-0 text-[#FF6961]">Campo inválido!</small>
+          )}
+        </div>
         
-        <InputText
-          id="password"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          className="w-[220px] h-[32px] bg-[#EDEDED] mt-3 text-[#000000] font-comfortaa text-[10px] rounded-[8px] placeholder-black py-1 px-2 
-            sm:text-[11px] sm:w-[220px] sm:h-[35px] md:w-[240px] lg:w-[260px] xl:text-[12px]"
-          placeholder="Senha"
-        />
+        <div className="flex flex-col relative mb-2">
+          <InputText
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-[220px] h-[32px] bg-[#EDEDED] mt-3 text-[#000000] font-comfortaa text-[10px] rounded-[8px] placeholder-black py-1 px-2 
+              sm:text-[11px] sm:w-[220px] sm:h-[35px] md:w-[240px] lg:w-[260px] xl:text-[12px] focus:outline-none focus:ring-0 focus:border-transparent"
+            placeholder="Senha"
+          />
+          {passwordError && (
+            <small className="p-error text-[10px] mt-0.5 absolute top-[100%] left-0 text-[#FF6961]">Campo inválido!</small>
+          )}
+        </div>
 
         <div className="flex text-[#FFFFFF] font-poppins font-light text-[0.65rem] mt-3 sm:text-[0.7rem] 2xl:text-[0.75rem]">
           <p>Não tem uma conta?</p>
           <a href="" className="px-1"><span className="text-[#FFFFFF] underline">Cadastre-se</span></a>
         </div>
 
-        <button className="w-[210px] h-[32px] bg-[#252436] font-poppins text-[14px] py-1 mt-3 flex items-center 
+        <button onClick={() => {
+          if (validateForm()) {
+            setSubmitted(true);
+            // Aqui você pode continuar com a lógica de cadastro
+          }
+        }} 
+        className="w-[210px] h-[32px] bg-[#252436] font-poppins text-[14px] py-1 mt-3 flex items-center 
         justify-center rounded-lg sm:h-[35px] md:text-[16px] md:w-[230px] lg:w-[250px] lg:text-[16px] xl:text-[17px]">
           Login
         </button>
