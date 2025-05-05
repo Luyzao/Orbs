@@ -7,6 +7,7 @@ import 'primeicons/primeicons.css'
 import '../src/styles/globals.css'
 import SideBar from '@/components/sideBar'
 
+
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter()
 
