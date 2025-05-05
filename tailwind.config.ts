@@ -1,18 +1,20 @@
 import type { Config } from "tailwindcss";
 
 export default {
-    darkMode: 'class',
-    mode: "jit",
+  mode: "jit",
+  darkMode: "class", // 
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/**/*.{js,jsx,ts,tsx}",
+    "./node_modules/primereact/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
   	extend: {
   		colors: {
-  			background: 'hsl(var(--background))',
-  			foreground: 'hsl(var(--foreground))',
+			background: "var(--background)",
+			foreground: "var(--foreground)",
   			card: {
   				DEFAULT: 'hsl(var(--card))',
   				foreground: 'hsl(var(--card-foreground))'
@@ -52,12 +54,17 @@ export default {
   				'5': 'hsl(var(--chart-5))'
   			}
   		},
+		  fontFamily: {
+			poppins: ["Poppins", "sans-serif"],
+			comfortaa: ["Comfortaa", "sans-serif"],
+		  },
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		}
   	}
+
   },
   plugins: [require("tailwindcss-animate")],
 } satisfies Config;
