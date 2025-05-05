@@ -14,7 +14,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <main
-      className={`bg-white ${!hideSidebar ? 'flex' : ''} ${typeof window !== 'undefined' && window.innerWidth < 768 ? 'pt-16' : ''}`}
+      className={`bg-white ${!hideSidebar ? 'flex' : ''} ${typeof window !== 'undefined' && window.innerWidth <= 919 ? 'pt-16' : ''}`}
     >
       {!hideSidebar && <SideBar />}
       <Component {...pageProps} />
