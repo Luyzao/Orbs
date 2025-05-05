@@ -10,7 +10,7 @@ import DespesasList from '@/components/despesasList'
 export default function Home() {
   const [date, setDate] = useState<Nullable<Date>>(null)
   return (
-    <div className="w-full font-comfortaa pb-7 lg:pb-0 p-4 flex flex-col gap-4 xl:pt-6 xl:pb-0 xl:p-8">
+    <div className="w-full font-comfortaa bg-[##F0F0F0] pb-7 lg:pb-0 p-4 flex flex-col gap-4 xl:pt-6 xl:pb-0 xl:p-8">
       <ToolBar />
       <div className="flex flex-col xl:flex-row w-auto xl:gap-0 gap-4">
         <div className="w-full flex flex-col gap-4 ">
