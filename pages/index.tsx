@@ -18,7 +18,6 @@ export default function Home() {
             <div className=" p-4 bg-gray-50 text-black rounded-lg shadow-xl w-full xl:w-7">
               <DoughnutChartDemo />
             </div>
-            <div className="flex flex-col items-center text-black w-4 bg-gray-50 rounded-xl shadow-xl gap-3 h-15rem justify-center">
             <div className="flex flex-col items-center text-black w-12 md:w-4 bg-gray-50 rounded-xl shadow-xl gap-3 h-15rem justify-center">
               <p className="text-4xl font-bol font-poppins">Saldo</p>
               <p className="text-2xl text-[#1E195B] font-poppins">R$2.050,90</p>
