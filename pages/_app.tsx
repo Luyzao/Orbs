@@ -8,7 +8,7 @@ import "../src/styles/globals.css";
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
-      <main className="bg-purple-300">
+      <main className="bg-gray-300">
         <Component {...pageProps} />
       </main>
     </>
