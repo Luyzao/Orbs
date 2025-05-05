@@ -1,48 +1,114 @@
-// src/components/Sidebar.tsx
-import { useRouter } from "next/router";
+'use client'
 
-const Sidebar = () => {
-  const router = useRouter();
+import { useState, useRef, useEffect } from 'react'
+import { MdMenuBook, MdOutlineCalculate, MdOutlineQrCode } from 'react-icons/md'
+import { TbPigMoney } from 'react-icons/tb'
+import { RxExit } from 'react-icons/rx'
+import { GiMoonOrbit } from 'react-icons/gi'
+import { useRouter } from 'next/navigation'
 
-  const menuItems = [
-    { label: "Dashboard", icon: "pi pi-th-large", path: "/dashboard" },
-    { label: "Educação", icon: "pi pi-book", path: "/educacao" },
-    { label: "Metas", icon: "pi pi-wallet", path: "/" },
-    { label: "Análises", icon: "pi pi-chart-bar", path: "/analises" },
-  ];
+export default function SideBar() {
+  const [itemSelecionado, setItemSelecionado] = useState('Dashboard')
+  const [colapsado, setColapsado] = useState(false)
+  const refs = useRef<any>([])
+  const router = useRouter()
 
-  return (
-    <aside className="w-60 h-screen bg-gray shadow-md flex flex-col p-6 justify-between">
-      <div>
-      <div className="flex items-center justify-center mb-12">
-        <h1 className="text-3xl font-bold mb-2 text-gray-800">Orbs</h1>
-      </div>
-        <ul className="space-y-6">
-          {menuItems.map((item) => (
-            <li
-              key={item.label}
-              className={`flex items-center space-x-3 cursor-pointer p-2 rounded-md ${
-                router.pathname === item.path
-                  ? "bg-[#f0f0ff] font-semibold" // fundo suave opcional
-                  : "text-gray-600 hover:bg-gray-100"
-              }`}
-              style={router.pathname === item.path ? { color: "#1E195B" } : {}}
-              onClick={() => router.push(item.path)}
+  const menuItens = [
+    { nome: 'Dashboard', icone: <MdOutlineQrCode size={25} />, path: '/' },
+    { nome: 'Educação', icone: <MdMenuBook size={25} />, path: '/education' },
+    { nome: 'Metas', icone: <TbPigMoney size={25} />, path: '/' },
+    {
+      nome: 'Calculadora',
+      icone: <MdOutlineCalculate size={25} />,
+      path: '/calculator',
+    },
+  ]
+
+  useEffect(() => {
+    const handleResize = () => {
+      setColapsado(window.innerWidth <= 919)
+    }
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  const pathNext = (path: string) => {
+    router.push(path)
+  }
+
+  if (colapsado) {
+    // Mobile: toolbar no topo
+    return (
+      <div className="fixed top-0 left-0 w-full h-16 bg-gray-100 shadow-md flex items-center justify-between px-4 z-50">
+        <div className="text-3xl text-gray-800">
+          <GiMoonOrbit />
+        </div>
+        <div className="flex gap-4">
+          {menuItens.map((item, index) => (
+            <button
+              key={item.nome}
+              ref={(el) => {
+                refs.current[index] = el
+              }}
+              onClick={() => {
+                setItemSelecionado(item.nome)
+                pathNext(item.path)
+              }}
+              className={`flex px-2 py-1 cursor-pointer
+                ${itemSelecionado === item.nome ? 'text-blue-900 bg-indigo-100 border-round-xl' : 'text-gray-800'}`}
             >
+              {item.icone}
+            </button>
+          ))}
+        </div>
+        <button className="text-gray-800 hover:text-red-500 transition-all">
+          <RxExit />
+        </button>
+      </div>
+    )
+  }
 
-              <i className={item.icon}></i>
-              <span>{item.label}</span>
+  // Desktop: sidebar à esquerda
+  return (
+    <div className="bg-gray-100 xl:w-48 px-2 pb-4 pt-6 shadow-xl h-screen flex flex-col items-center justify-between transition-all">
+      <div className="flex flex-col items-center gap-5">
+        <div className="text-5xl text-gray-800 mb-4 md:hidden xl:block">
+          Orbs
+        </div>
+
+        <ul className="text-xl flex flex-col gap-3 z-10">
+          {menuItens.map((item, index) => (
+            <li
+              key={item.nome}
+              ref={(el) => {
+                refs.current[index] = el
+              }}
+              onClick={() => {
+                setItemSelecionado(item.nome)
+                pathNext(item.path)
+              }}
+              className={`flex gap-2 px-3 py-1 cursor-pointer
+                                ${itemSelecionado === item.nome ? 'text-blue-900 bg-indigo-100 border-round-xl' : 'text-gray-800'}`}
+            >
+              <i>{item.icone}</i>
+              <p className="hidden xl:block">{item.nome}</p>
             </li>
           ))}
         </ul>
       </div>
 
-      <button className="flex items-center text-red-500 mt-10">
-        <i className="pi pi-sign-out mr-2"></i>
-        Sair
+      <button
+        className="text-gray-800 flex items-center gap-2 text-xl hover:bg-gray-300 px-3 py-1 rounded-xl transition-all"
+        onClick={() => {
+          router.push('/education')
+        }}
+      >
+        <i>
+          <RxExit />
+        </i>
+        <p className="hidden xl:block">Sair</p>
       </button>
-    </aside>
-  );
-};
-
-export default Sidebar;
+    </div>
+  )
+}
