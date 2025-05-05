@@ -18,7 +18,7 @@ export default function SideBar() {
 
   useEffect(() => {
     const handleResize = () => {
-      setColapsado(window.innerWidth < 768)
+      setColapsado(window.innerWidth <= 919)
     }
     handleResize()
     window.addEventListener('resize', handleResize)
@@ -56,9 +56,11 @@ export default function SideBar() {
 
   // Desktop: sidebar à esquerda
   return (
-    <div className="bg-gray-100 w-48 px-2 pb-4 pt-6 shadow-xl h-screen flex flex-col items-center justify-between transition-all">
+    <div className="bg-gray-100 xl:w-48 px-2 pb-4 pt-6 shadow-xl h-screen flex flex-col items-center justify-between transition-all">
       <div className="flex flex-col items-center gap-5">
-        <div className="text-5xl text-gray-800 mb-4">Orbs</div>
+        <div className="text-5xl text-gray-800 mb-4 md:hidden xl:block">
+          Orbs
+        </div>
 
         <ul className="text-xl flex flex-col gap-3 z-10">
           {menuItens.map((item, index) => (
@@ -72,7 +74,7 @@ export default function SideBar() {
                                 ${itemSelecionado === item.nome ? 'text-blue-900 bg-indigo-100 border-round-xl' : 'text-gray-800'}`}
             >
               <i>{item.icone}</i>
-              {item.nome}
+              <p className="hidden xl:block">{item.nome}</p>
             </li>
           ))}
         </ul>
@@ -82,7 +84,7 @@ export default function SideBar() {
         <i>
           <RxExit />
         </i>
-        Sair
+        <p className="hidden xl:block">Sair</p>
       </button>
     </div>
   )

@@ -58,8 +58,7 @@ export default function DoughnutChartDemo() {
         type="doughnut"
         data={chartData}
         options={chartOptions}
-        className="gap-5"
-        style={{ width: '400px', height: '150px' }}
+        className="gap-5 w-[300px] md:w-[280px] lg:w-[250px] xl:w-[350px]  h-[150px]"
       />
     </div>
   )
