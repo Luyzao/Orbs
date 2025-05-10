@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { InputText } from 'primereact/inputtext';
+import { supabase } from 'lib/supabaseClient';
 
 interface LoginRectangleProps {
   className?: string;
@@ -9,7 +10,6 @@ const LoginRectangle: React.FC<LoginRectangleProps> = () => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [submitted, setSubmitted] = useState(false);
 
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
@@ -23,7 +23,28 @@ const LoginRectangle: React.FC<LoginRectangleProps> = () => {
     setEmailError(!emailValid);
     setPasswordError(!passwordValid);
 
-    return emailValid && passwordValid
+    return emailValid && passwordValid;
+  };
+
+  const handleLogin = async () => {
+    if (validateForm()) {
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: email,
+          password: password
+        });
+
+        if (error) {
+          alert('Erro ao fazer login: ' + error.message);
+        } else {
+          alert('Login realizado com sucesso!');
+          window.location.href = "/";
+        }
+      } catch (error) {
+        console.error(error);
+        alert('Erro desconhecido ao tentar fazer login.');
+      }
+    }
   };
 
   return (
@@ -59,6 +80,7 @@ const LoginRectangle: React.FC<LoginRectangleProps> = () => {
           <div className="flex flex-col relative mb-2">
             <InputText
               id="password"
+              type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-[220px] h-[32px] bg-[#EDEDED] mt-3 text-[#000000] font-comfortaa text-[10px] rounded-[8px] placeholder-black py-1 px-2 
@@ -75,12 +97,7 @@ const LoginRectangle: React.FC<LoginRectangleProps> = () => {
             <a href="/auth/signup" className="px-1"><span className="text-[#FFFFFF] underline">Cadastre-se</span></a>
           </div>
 
-          <button onClick={() => {
-            if (validateForm()) {
-              setSubmitted(true);
-              // Aqui você pode continuar com a lógica de cadastro
-            }
-          }}
+          <button onClick={handleLogin}
             className="w-[210px] h-[32px] bg-[#252436] font-poppins text-[14px] py-1 mt-3 flex items-center 
             justify-center rounded-lg sm:h-[35px] md:text-[16px] md:w-[230px] lg:w-[250px] lg:text-[16px] xl:text-[17px]">
             Login
@@ -102,7 +119,6 @@ const LoginRectangle: React.FC<LoginRectangleProps> = () => {
 
       </div>
     </div>
-
   );
 };
 
