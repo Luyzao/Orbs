@@ -44,3 +44,24 @@ body {
 }
 
 
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background-color: #E1E1E1;
+  border-radius: 10px;
+  margin: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+  margin: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #2418B8;
+  border-radius: 10px;
+  margin: 3px;
+}
+
