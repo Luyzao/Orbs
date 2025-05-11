@@ -16,7 +16,7 @@ export default function SideBar() {
   const menuItens = [
     { nome: 'Dashboard', icone: <MdOutlineQrCode size={25} />, path: '/' },
     { nome: 'Educação', icone: <MdMenuBook size={25} />, path: '/education' },
-    { nome: 'Metas', icone: <TbPigMoney size={25} />, path: '/' },
+    { nome: 'Metas', icone: <TbPigMoney size={25} />, path: '/metas' },
     {
       nome: 'Calculadora',
       icone: <MdOutlineCalculate size={25} />,
