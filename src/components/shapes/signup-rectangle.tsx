@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { InputText } from 'primereact/inputtext';
 import { useRouter } from 'next/router';
+import { supabase } from 'lib/supabaseClient';
 
 interface SignUpRectangleProps {
   className?: string;
@@ -37,34 +38,34 @@ const SignUpRectangle: React.FC<SignUpRectangleProps> = () => {
     return emailValid && passwordValid && nameValid && surnameValid;
   };
 
-  const onSubmit = async () => {
-    if (!validateForm()) return;
+  const handleSubmit = async () => {
+    if (validateForm()) {
+      try {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password
+        });
 
-    try {
-      const response = await fetch('http://localhost:3390/api/user/route', {
-        method: 'POST',
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          name: `${name.trim()} ${surname.trim()}`,
-          email: email.trim(),
-          password: password.trim()
-        })
-      });
+        const user = data.user;
 
-      const data = await response.json();
+        if (error) {
+          throw error;
+        }
 
-      if (response.ok) {
-        console.log("Usuário criado:", data.user);
-        alert("Cadastro realizado com sucesso!");
+        const fullName = `${name} ${surname}`.trim();
+
+        await supabase
+          .from('User')
+          .upsert({ id: user?.id, name: fullName });
+
+
+        alert("Cadastrado com sucesso!");
+        setSubmitted(true);
         router.push('/auth/login');
-      } else {
-        alert(data.message || "Erro ao cadastrar usuário.");
+
+      } catch (error: any) {
+        console.error("Erro ao criar a conta:", error.message);
       }
-    } catch (error) {
-      console.error("Erro na requisição:", error);
-      alert("Erro inesperado ao tentar cadastrar.");
     }
   };
 
@@ -150,7 +151,7 @@ const SignUpRectangle: React.FC<SignUpRectangleProps> = () => {
         <button onClick={() => {
           if (validateForm()) {
             setSubmitted(true);
-            onSubmit();
+            handleSubmit();
           }
         }}
           className="w-[165px] h-[32px] bg-[#252436] font-poppins text-[13px] py-1 mt-3 flex items-center 
