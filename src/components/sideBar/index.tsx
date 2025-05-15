@@ -6,12 +6,14 @@ import { TbPigMoney } from 'react-icons/tb'
 import { RxExit } from 'react-icons/rx'
 import { GiMoonOrbit } from 'react-icons/gi'
 import { useRouter } from 'next/navigation'
+import { useAuth } from '@/context/AuthContext'
 
 export default function SideBar() {
   const [itemSelecionado, setItemSelecionado] = useState('Dashboard')
   const [colapsado, setColapsado] = useState(false)
   const refs = useRef<any>([])
   const router = useRouter()
+  const { logout } = useAuth()
 
   const menuItens = [
     { nome: 'Dashboard', icone: <MdOutlineQrCode size={25} />, path: '/' },
@@ -23,6 +25,11 @@ export default function SideBar() {
       path: '/calculator',
     },
   ]
+
+  const handleLogout = () => {
+    logout() // limpa sessão / remove user do contexto
+    router.push('/auth/login') // redireciona para login
+  }
 
   useEffect(() => {
     const handleResize = () => {
@@ -100,9 +107,7 @@ export default function SideBar() {
 
       <button
         className="text-gray-800 flex items-center gap-2 text-xl hover:bg-gray-300 px-3 py-1 rounded-xl transition-all"
-        onClick={() => {
-          router.push('/education')
-        }}
+        onClick={handleLogout}
       >
         <i>
           <RxExit />
