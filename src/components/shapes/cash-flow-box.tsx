@@ -11,7 +11,7 @@ const CashFlowBox: React.FC<CashFlowBoxProps> = () => {
   const [others, setOthers] = useState('')
 
   return (
-    <div className="relative ml-4 mt-8 sm:ml-4 sm:mt-8 md:ml-4 md:mt-4 lg:ml-4 lg:mt-4 xl:ml-4 xl:mt-4">
+    <div className="relative ml-2 mt-8 sm:ml-2 sm:mt-8 md:ml-2 md:mt-4 lg:ml-2 lg:mt-4 xl:ml-2 xl:mt-4">
       {/* Calculo */}
       <div
         className="absolute inset-y-0 left-40 sm:left-56 md:left-64 right-0 translate-x-4 bg-[#383577] w-[136px] sm:w-[220px] md:w-[300px] lg:w-[310px] xl:w-[310] h-[280px] sm:h-[290px] md:h-[300px] lg:h-[300px] xl:h-[300px] ml-2 mt-4 rounded-md shadow-lg"
