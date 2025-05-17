@@ -10,6 +10,36 @@ const CashFlowBox: React.FC<CashFlowBoxProps> = () => {
   const [extraIncome, setextraIncome] = useState('')
   const [others, setOthers] = useState('')
 
+  const handleSave = async () => {
+    const data = {
+      income,
+      extraIncome,
+      others
+    }
+  try {
+      const response = await fetch('http://localhost:3000/api/income', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+
+      if (response.ok) {
+        alert('Dados salvos com sucesso!')
+        // Limpar campos
+        setIncome('')
+        setextraIncome('')
+        setOthers('')
+      } else {
+        alert('Erro ao salvar os dados.')
+      }
+    } catch (error) {
+      console.error('Erro ao enviar dados:', error)
+      alert('Erro na comunicação com o servidor.')
+    }
+  }
+
   return (
     <div className="relative ml-2 mt-8 sm:ml-2 sm:mt-8 md:ml-2 md:mt-4 lg:ml-2 lg:mt-4 xl:ml-2 xl:mt-4">
       {/* Calculo */}
@@ -55,7 +85,7 @@ const CashFlowBox: React.FC<CashFlowBoxProps> = () => {
       </div>
 
       {/* Entradas de receita */}
-      <div className="bg-[#EBEBEB] w-[255px] h-[325px] sm:w-[360px] sm:h-[335px] md:w-[440px] md:h-[346px] lg:w-[540px] xl:w-[540px] flex flex-col items-start justify-start gap-3 rounded-lg shadow-md p-4">
+      <div className="bg-[#EBEBEB] w-[255px] h-[325px] sm:w-[360px] sm:h-[335px] md:w-[440px] md:h-[356px] lg:w-[540px] xl:w-[540px] flex flex-col items-start justify-start gap-3 rounded-lg shadow-md p-4">
         <h2 className="font-comfortaa text-lg sm:text-xl md:text-2xl lg:text-2xl xl:text-2xl text-start text-[#888888] ">
           Receita
         </h2>
@@ -98,6 +128,13 @@ const CashFlowBox: React.FC<CashFlowBoxProps> = () => {
             className="font-comfortaa bg-[#E1E1E1] text-[#000000] placeholder:text-[#000000] w-full p-2 rounded-lg focus:outline-none focus:shadow-md"
           />
         </div>
+          {/* Botão de Salvar */}
+        <button
+          onClick={handleSave}
+          className="w-1/5 h-9/10 mt-1 mb-2 bg-[#383577] font-poppins text-white rounded-md shadow hover:bg-[#2f2c6e] transition"
+        >
+          Salvar
+        </button>
       </div>
     </div>
   )
