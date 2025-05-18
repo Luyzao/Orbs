@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { supabase } from 'lib/supabaseClient'; // ou o caminho correto do seu client
+import { supabase } from 'lib/supabaseClient'; 
 
 
 interface CashFlowBoxProps {
