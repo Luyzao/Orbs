@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { InputText } from 'primereact/inputtext'
+import { supabase } from 'lib/supabaseClient'; // ou o caminho correto do seu client
+
 
 interface CashFlowBoxProps {
   className?: string
@@ -7,38 +9,105 @@ interface CashFlowBoxProps {
 
 const CashFlowBox: React.FC<CashFlowBoxProps> = () => {
   const [income, setIncome] = useState('')
-  const [extraIncome, setextraIncome] = useState('')
-  const [others, setOthers] = useState('')
+  const [extraincome, setextraIncome] = useState('')
+  const [otherincome, setOthers] = useState('')
+
+  // Função para formatar valor monetário em BRL
+  const formatCurrency = (value: string) => {
+    const onlyNumbers = value.replace(/\D/g, ''); // só números
+    const numberValue = Number(onlyNumbers) / 100;
+
+    // Se não for número válido, retorna vazio
+    if (isNaN(numberValue)) return '';
+
+    return numberValue.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    });
+  };
+
+  // Handlers para os inputs com formatação
+  const handleIncomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatCurrency(e.target.value);
+    setIncome(formatted);
+  };
+
+  const handleExtraIncomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatCurrency(e.target.value);
+    setextraIncome(formatted);
+  };
+
+  const handleOthersChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatCurrency(e.target.value);
+    setOthers(formatted);
+  };
+
+  // Função para converter string formatada "R$ 1.234,56" em número float 1234.56 antes de enviar
+  const parseCurrencyToNumber = (value: string) => {
+    if (!value) return 0;
+    // Remove "R$ ", pontos e troca vírgula por ponto
+    return Number(value.replace(/[R$\s\.]/g, '').replace(',', '.'));
+  };
+
+  const getToken = async () => {
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.getSession();
+
+    if (error) {
+      console.error('Erro ao obter sessão:', error);
+      return null;
+    }
+
+    if (!session) {
+      console.log('Usuário não está logado');
+      return null;
+    }
+
+    return session.access_token;
+  };
 
   const handleSave = async () => {
-    const data = {
-      income,
-      extraIncome,
-      others
-    }
-  try {
-      const response = await fetch('http://localhost:3000/api/income', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      })
+  const token = await getToken();
 
-      if (response.ok) {
-        alert('Dados salvos com sucesso!')
-        // Limpar campos
-        setIncome('')
-        setextraIncome('')
-        setOthers('')
-      } else {
-        alert('Erro ao salvar os dados.')
-      }
-    } catch (error) {
-      console.error('Erro ao enviar dados:', error)
-      alert('Erro na comunicação com o servidor.')
-    }
+  if (!token) {
+    alert('Usuário não autenticado');
+    return;
   }
+
+  const data = {
+    income: parseCurrencyToNumber(income),
+    extraincome: parseCurrencyToNumber(extraincome),
+    otherincome: parseCurrencyToNumber(otherincome),
+  };
+
+  try {
+    const response = await fetch('http://localhost:3390/api/income/route', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data), // ✅ usa diretamente o objeto `data` com os campos certos
+    });
+
+    if (response.ok) {
+      alert('Dados salvos com sucesso!');
+      setIncome('');
+      setextraIncome('');
+      setOthers('');
+    } else {
+      const errRes = await response.json();
+      console.error('Erro da API:', errRes);
+      alert('Erro ao salvar os dados.');
+    }
+  } catch (error) {
+    console.error('Erro ao enviar dados:', error);
+    alert('Erro na comunicação com o servidor.');
+  }
+};
+
 
   return (
     <div className="relative ml-2 mt-8 sm:ml-2 sm:mt-8 md:ml-2 md:mt-4 lg:ml-2 lg:mt-4 xl:ml-2 xl:mt-4">
@@ -97,7 +166,7 @@ const CashFlowBox: React.FC<CashFlowBoxProps> = () => {
           <input
             type="text"
             value={income}
-            onChange={(e) => setIncome(e.target.value)}
+            onChange={handleIncomeChange}
             placeholder="R$ 00,00"
             className="font-comfortaa bg-[#E1E1E1] text-[#000000] placeholder:text-[#000000] w-full p-2 rounded-lg focus:outline-none focus:shadow-md"
           />
@@ -109,8 +178,8 @@ const CashFlowBox: React.FC<CashFlowBoxProps> = () => {
           </label>
           <input
             type="text"
-            value={extraIncome}
-            onChange={(e) => setextraIncome(e.target.value)}
+            value={extraincome}
+            onChange={handleExtraIncomeChange}
             placeholder="R$ 00,00"
             className="font-comfortaa bg-[#E1E1E1] text-[#000000] placeholder:text-[#000000] w-full p-2 rounded-lg focus:outline-none focus:shadow-md"
           />
@@ -122,8 +191,8 @@ const CashFlowBox: React.FC<CashFlowBoxProps> = () => {
           </label>
           <input
             type="text"
-            value={others}
-            onChange={(e) => setOthers(e.target.value)}
+            value={otherincome}
+            onChange={handleOthersChange}
             placeholder="R$ 00,00"
             className="font-comfortaa bg-[#E1E1E1] text-[#000000] placeholder:text-[#000000] w-full p-2 rounded-lg focus:outline-none focus:shadow-md"
           />
