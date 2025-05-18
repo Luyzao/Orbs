@@ -1,5 +1,4 @@
-import React, { useState } from 'react'
-import { InputText } from 'primereact/inputtext'
+import React, { useState, useEffect } from 'react'
 import { supabase } from 'lib/supabaseClient'; // ou o caminho correto do seu client
 
 
@@ -11,6 +10,9 @@ const CashFlowBox: React.FC<CashFlowBoxProps> = () => {
   const [income, setIncome] = useState('')
   const [extraincome, setextraIncome] = useState('')
   const [otherincome, setOthers] = useState('')
+  const [total, setTotal] = useState('R$ 0,00')
+  const [impostoRenda, setImpostoRenda] = useState('R$ 0,00')
+
 
   // Função para formatar valor monetário em BRL
   const formatCurrency = (value: string) => {
@@ -25,6 +27,14 @@ const CashFlowBox: React.FC<CashFlowBoxProps> = () => {
       currency: 'BRL',
     });
   };
+
+  const formatCurrencyFromNumber = (value: number) => {
+    return value.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    });
+  };
+
 
   // Handlers para os inputs com formatação
   const handleIncomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -94,9 +104,8 @@ const CashFlowBox: React.FC<CashFlowBoxProps> = () => {
 
     if (response.ok) {
       alert('Dados salvos com sucesso!');
-      setIncome('');
-      setextraIncome('');
-      setOthers('');
+      await fetchIncomeData();
+      
     } else {
       const errRes = await response.json();
       console.error('Erro da API:', errRes);
@@ -107,6 +116,58 @@ const CashFlowBox: React.FC<CashFlowBoxProps> = () => {
     alert('Erro na comunicação com o servidor.');
   }
 };
+
+  function parseIncomeData(data: any) {
+    return {
+      income: formatCurrencyFromNumber(Number(data.income) || 0), // formata para R$
+      extraincome: formatCurrencyFromNumber(Number(data.extraincome) || 0),
+      otherincome: formatCurrencyFromNumber(Number(data.otherincome) || 0),
+      total: formatCurrencyFromNumber(Number(data.total) || 0),
+      impostoRenda: formatCurrencyFromNumber(Number(data.impostoRenda) || 0),
+    };
+  }
+
+
+
+ const fetchIncomeData = async () => {
+    const token = await getToken()
+
+    if (!token) {
+      alert('Usuário não autenticado')
+      return
+    }
+
+    try {
+      const response = await fetch('http://localhost:3390/api/income/route', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error('Erro ao buscar dados')
+      }
+
+      const fetchedData = await response.json();
+      const cleanedData = parseIncomeData(fetchedData);
+      setIncome(cleanedData.income); // aqui income é string
+      setextraIncome(cleanedData.extraincome);
+      setOthers(cleanedData.otherincome);
+      setTotal(cleanedData.total);
+      setImpostoRenda(cleanedData.impostoRenda);
+
+
+    } catch (error) {
+      console.error(error)
+      alert('Erro ao carregar dados')
+    }
+  }
+
+  // Chama a busca assim que o componente monta
+  useEffect(() => {
+    fetchIncomeData()
+  }, [])
 
 
   return (
@@ -121,8 +182,7 @@ const CashFlowBox: React.FC<CashFlowBoxProps> = () => {
           Total{' '}
         </h2>
         <p className="font-comfortaa text-xl sm:text-2xl md:text-4xl lg:text-4xl xl:text-4xl text-start text-[#FFFFFF] ml-3 s:mt-2 s:mb-4 m:mt-1 lg:mt-1 s:ml-4 m:ml-4 lg:ml-4 mb-1">
-          {' '}
-          R$ 00,00{' '}
+          {total}
         </p>
 
         <h2 className="font-poppins text-base sm:text-sm md:text-xl lg:text-xl xl:tex t-xl text-start text-[#FFFFFF] ml-3 mt-1 s:mt-4 m:mt-1 lg:mt-1 s:ml-4 m:ml-4 lg:ml-4 ">
@@ -130,8 +190,7 @@ const CashFlowBox: React.FC<CashFlowBoxProps> = () => {
           Renda extra{' '}
         </h2>
         <p className="font-comfortaa text-xl sm:text-xl md:text-2xl lg:text-2xl xl:text-2xl text-start text-[#FFFFFF] ml-3 s:mt-1 s:mb-2 m:mt-1 lg:mt-1 s:ml-4 m:ml-4 lg:ml-4 mb-1">
-          {' '}
-          R$ 00,00{' '}
+          {extraincome}
         </p>
 
         <h2 className="font-poppins text-base sm:text-sm md:text-xl lg:text-xl xl:text-xl text-start text-[#FFFFFF] ml-3 mt-1 s:mt-1 m:mt-1 lg:mt-1 s:ml-4 m:ml-4 lg:ml-4">
@@ -139,8 +198,7 @@ const CashFlowBox: React.FC<CashFlowBoxProps> = () => {
           Outros{' '}
         </h2>
         <p className="font-comfortaa text-xl sm:text-xl md:text-2xl lg:text-2xl xl:text-2xl text-start text-[#FFFFFF] ml-3 mt-1 s:mt-1 s:mb-2 m:mt-1 lg:mt-1 s:ml-4 m:ml-4 lg:ml-4 mb-1">
-          {' '}
-          R$ 00,00{' '}
+          {otherincome}
         </p>
 
         <h2 className="font-poppins text-base sm:text-sm md:text-xl lg:text-xl xl:text-xl text-start text-[#FFFFFF] ml-3 mt-1 s:mt-1 m:mt-1 lg:mt-1 s:ml-4 m:ml-4 lg:ml-4">
@@ -148,8 +206,7 @@ const CashFlowBox: React.FC<CashFlowBoxProps> = () => {
           Imposto de renda{' '}
         </h2>
         <p className="font-comfortaa text-xl sm:text-xl md:text-2xl lg:text-2xl xl:text-2xl text-start text-[#FFFFFF] ml-3 mt-1 s:mt-1 s:mb-2 m:mt-1 lg:mt-1 s:ml-4 m:ml-4 lg:ml-4">
-          {' '}
-          R$ 00,00{' '}
+          {impostoRenda}
         </p>
       </div>
 
