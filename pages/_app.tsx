@@ -26,15 +26,17 @@ function MyApp({ Component, pageProps }: AppProps) {
 
 function MainContent({ Component, pageProps, hideSidebar }: any) {
   const router = useRouter()
-  const { user } = useAuth()
-  console.log(user)
-  const authLink = router.pathname.startsWith('/auth')
+  const { user, loading } = useAuth()
+  const isAuthPage = router.pathname.startsWith('/auth')
 
   useEffect(() => {
-    if (!authLink && !user) {
+    if (loading) return
+    if (!isAuthPage && !user) {
       router.push('/auth/login')
     }
-  }, [user, router, authLink])
+  }, [user, loading, isAuthPage, router])
+
+  if (loading) return null
 
   return (
     <main className={`bg-white ${!hideSidebar ? 'flex' : ''}`}>

@@ -94,6 +94,7 @@ const LoginRectangle: React.FC<LoginRectangleProps> = () => {
           console.error("Erro ao inserir usuário", insertError);
         } else {
           console.log("Usuário inserido na tabela User");
+          alert("Cadastro com sucesso!");
         }
       }
     }
