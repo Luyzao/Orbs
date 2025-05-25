@@ -19,83 +19,97 @@ type Expense = {
   userId: string;
 };
 
-const Expenses = () => {
+
+interface ExpensesProps {
+  selectedDate: Date | null;
+}
+
+
+const Expenses: React.FC<ExpensesProps> = ({ selectedDate }) => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [total, setTotal] = useState(0);
   const [maxCategory, setMaxCategory] = useState<string>("");
   const [maxCategoryTotal, setMaxCategoryTotal] = useState<number>(0);
   const [categoryTotals, setCategoryTotals] = useState<Record<string, number>>({});
- 
+  const [difference, setDifference] = useState<number>(0);
 
   useEffect(() => {
-    const fetchDespesas = async () => {
-      const { data: sessionData, error } = await supabase.auth.getSession();
-      const token = sessionData?.session?.access_token;
+  const fetchDespesas = async () => {
+    const { data: sessionData, error } = await supabase.auth.getSession();
+    const token = sessionData?.session?.access_token;
 
-      if (!token) {
-        console.error('Usuário não autenticado');
-        return;
-      }
+    if (!selectedDate || !token) {
+      console.error("Usuário não autenticado ou data inválida");
+      return;
+    }
 
-      try {
-        const res = await fetch('http://localhost:3390/api/expensesincome/route', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
+    const year = selectedDate.getFullYear();
+    const month = selectedDate.getMonth() + 1;
 
-        const data = await res.json() as Expense[];
+    // Cálculo para o mês anterior
+    const previousMonthDate = new Date(selectedDate);
+    previousMonthDate.setMonth(previousMonthDate.getMonth() - 1);
+    const previousMonth = previousMonthDate.getMonth() + 1;
+    const previousYear = previousMonthDate.getFullYear();
 
-        const categoryTotals = data.reduce(
-          (acc: Record<string, number>, expense: Expense) => {
-            const categoryName = expense.category.name;
-            if (!acc[categoryName]) {
-              acc[categoryName] = 0;
-            }
-            acc[categoryName] += expense.amount;
-            return acc;
-          },
-          {} as Record<string, number>
-        );
+    try {
+      // Busca despesas do mês atual
+      const resAtual = await fetch(`http://localhost:3390/api/expensesincome/route?month=${month}&year=${year}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      const dataAtual = await resAtual.json() as Expense[];
 
-        setCategoryTotals(categoryTotals);
-        setExpenses(data);
+      // Busca despesas do mês anterior
+      const resAnterior = await fetch(`http://localhost:3390/api/expensesincome/route?month=${previousMonth}&year=${previousYear}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      const dataAnterior = await resAnterior.json() as Expense[];
 
+      // Totais
+      const totalAtual = dataAtual.reduce((sum, e) => sum + e.amount, 0);
+      const totalAnterior = dataAnterior.reduce((sum, e) => sum + e.amount, 0);
+      const diferenca = totalAtual - totalAnterior;
 
-        setExpenses(data);
+      // Categorias
+      const categoryTotals = dataAtual.reduce((acc: Record<string, number>, expense: Expense) => {
+        const categoryName = expense.category.name;
+        acc[categoryName] = (acc[categoryName] || 0) + expense.amount;
+        return acc;
+      }, {});
 
-        // Cálculo do total das despesas
-        const total = data.reduce((sum: number, expense: Expense) => sum + expense.amount, 0);
-        setTotal(total);
-
-        //encontrar a categoria com maior valor:
-        let maxCategory = "";
-        let maxValue = 0;
-
-        for (const [category, total] of Object.entries(categoryTotals)) {
-          if (total > maxValue) {
-            maxValue = total;
-            maxCategory = category;
-          }
+      let maxCategory = "";
+      let maxValue = 0;
+      for (const [category, total] of Object.entries(categoryTotals)) {
+        if (total > maxValue) {
+          maxValue = total;
+          maxCategory = category;
         }
-           // Salvar o resultado no estado
-        setMaxCategory(maxCategory);
-        setMaxCategoryTotal(maxValue);
-
-      } catch (err) {
-        console.error("Erro ao buscar despesas:", err);
       }
 
-      
-      
+      // Setando estados
+      setExpenses(dataAtual);
+      setTotal(totalAtual);
+      setMaxCategory(maxCategory);
+      setMaxCategoryTotal(maxValue);
+      setCategoryTotals(categoryTotals);
+      setDifference(diferenca); // <- novo estado
 
-   
-    };
+    } catch (err) {
+      console.error("Erro ao buscar despesas:", err);
+    }
+  };
 
-    fetchDespesas();
-  }, []);
+  fetchDespesas();
+}, [selectedDate]);
+
 
     return (
         <div className="relative ml-2 mt-10 sm:ml-2 sm:mt-4 md:ml-2 md:mt-4 lg:ml-2 lg:mt-4 xl:ml-2 xl:mt-4">
@@ -111,7 +125,7 @@ const Expenses = () => {
         <p className="font-comfortaa text-lg sm:text-xl md:text-2xl lg:text-2xl xl:text-2xl text-start text-[#FFFFFF] ml-3 s:mt-1 m:mt-1 lg:mt-1 s:ml-4 m:ml-4 lg:ml-4 mb-2 sm:mb-2 md:mb-3 lg:mb-2 xl:mb-3"> R$ {maxCategoryTotal.toFixed(2).replace('.', ',')} </p>
 
         <h2 className="font-poppins text-xs sm:text-sm md:text-sm lg:text-sm xl:text-base text-start text-[#FFFFFF] ml-3  s:mt-1 m:mt-1 lg:mt-1 s:ml-4 m:ml-4 lg:ml-4"> Diferença com o mês anterior </h2>
-        <p className="font-comfortaa text-lg sm:text-xl md:text-2xl lg:text-2xl xl:text-2xl text-start text-[#FFFFFF] ml-3 mt-1 s:mt-1 m:mt-1 lg:mt-1 s:ml-4 m:ml-4 lg:ml-4 xl:mb-2"> R$ 00,00 </p>
+        <p className="font-comfortaa text-lg sm:text-xl md:text-2xl lg:text-2xl xl:text-2xl text-start text-[#FFFFFF] ml-3 mt-1 s:mt-1 m:mt-1 lg:mt-1 s:ml-4 m:ml-4 lg:ml-4 xl:mb-2"> R$ {Math.abs(difference).toFixed(2).replace('.', ',')} </p>
 
 
 
