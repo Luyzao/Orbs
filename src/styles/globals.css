@@ -27,14 +27,13 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
-
+  
 }
 
 @keyframes spin {
   0% {
     transform: rotate(0deg);
   }
-
   100% {
     transform: rotate(360deg);
   }
@@ -66,31 +65,13 @@ body {
   margin: 3px;
 }
 
-.p-radiobutton .p-radiobutton-box {
-  border: 3px solid white !important;
-  background-color: transparent !important;
-  box-shadow: none !important;
-  width: 20px;
-  height: 20px;
+/* globals.css */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
-.p-radiobutton .p-radiobutton-box.p-highlight {
-  background-color: white !important;
-  border-color: white !important;
-}
-
-.p-radiobutton .p-radiobutton-box.p-highlight::before {
-  background-color: transparent !important;
-  box-shadow: none !important;
-}
-
-.custom-progressbar .p-progressbar-value {
-  background-color: #5C4FFF !important;
-  height: 14px !important;
-}
-
-.custom-progressbar {
-  height: 14px !important;
-  background-color: #FFFFFF;
-  border-radius: 0.5rem;
+input[type='number'] {
+  -moz-appearance: textfield;
 }
