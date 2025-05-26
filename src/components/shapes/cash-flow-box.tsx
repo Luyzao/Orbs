@@ -93,6 +93,7 @@ const CashFlowBox: React.FC<CashFlowBoxProps> = ({ selectedDate, className }) =>
     income: parseCurrencyToNumber(income),
     extraincome: parseCurrencyToNumber(extraincome),
     otherincome: parseCurrencyToNumber(otherincome),
+    date: selectedDate ? selectedDate.toISOString() : null, // sata convertida para ISO string
   };
 
   try {
