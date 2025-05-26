@@ -1,14 +1,54 @@
 import DoughnutChartDemo from '@/components/homeChart'
 import ToolBar from '@/components/toolBar'
 import { FiPlusCircle } from 'react-icons/fi'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Calendar } from 'primereact/calendar'
 import { Nullable } from 'primereact/ts-helpers'
 import GoalsList from '@/components/goals'
 import DespesasList from '@/components/despesasList'
+import { supabase } from 'lib/supabaseClient'
 
 export default function Home() {
   const [date, setDate] = useState<Nullable<Date>>(null)
+
+  useEffect(() => {
+    async function checkAndInsertUser() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) return;
+
+      // Verifica se já existe na tabela User
+      const { data: existingUser, error } = await supabase
+        .from("User")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      if (error && error.code !== "PGRST116") {
+        console.error("Erro ao buscar usuário", error);
+        return;
+      }
+
+      if (!existingUser) {
+        const { error: insertError } = await supabase.from("User").insert({
+          id: user.id,
+          name: user.user_metadata.full_name || "Usuário Google",
+        });
+
+        if (insertError) {
+          console.error("Erro ao inserir usuário", insertError);
+        } else {
+          console.log("Usuário inserido na tabela User");
+          alert("Cadastro com sucesso!");
+        }
+      }
+    }
+
+    checkAndInsertUser();
+  }, []);
+
   return (
     <div className="w-full font-comfortaa bg-[##F0F0F0] pb-7 lg:pb-0 p-4 flex flex-col gap-4 xl:pt-6 xl:pb-0 xl:p-8">
       <ToolBar />

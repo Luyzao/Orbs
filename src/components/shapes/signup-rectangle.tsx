@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { InputText } from 'primereact/inputtext';
 import { useRouter } from 'next/router';
 import { supabase } from 'lib/supabaseClient';
@@ -66,6 +66,19 @@ const SignUpRectangle: React.FC<SignUpRectangleProps> = () => {
       } catch (error: any) {
         console.error("Erro ao criar a conta:", error.message);
       }
+    }
+  };
+
+  const handleGoogleSignup = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/login`,
+      },
+    });
+
+    if (error) {
+      console.error('Erro ao cadastrar com Google:', error);
     }
   };
 
@@ -166,7 +179,8 @@ const SignUpRectangle: React.FC<SignUpRectangleProps> = () => {
           <div className="flex-grow h-px bg-[#BFBEBE]" />
         </div>
 
-        <button className="w-[130px] h-[30px] bg-[#D9D9D9] text-black font-poppins text-[12px] py-1 mt-3 border rounded-md flex items-center justify-center gap-2.5
+        <button onClick={handleGoogleSignup}
+          className="w-[130px] h-[30px] bg-[#D9D9D9] text-black font-poppins text-[12px] py-1 mt-3 border rounded-md flex items-center justify-center gap-2.5
         sm:w-[150px] sm:h-[32px] sm:text-[13px] xl:w-[170px] xl:h-[34px] xl:text-[14px]">
           <img className="w-[16px] h-auto xl:w-[18px]" src="/images/google-icon.png" alt="Google" />
           Google
