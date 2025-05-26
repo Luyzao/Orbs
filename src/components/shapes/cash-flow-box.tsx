@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from 'lib/supabaseClient'; 
-
+import { format } from 'date-fns';
 
 interface CashFlowBoxProps {
-  className?: string
+  className?: string;
+  selectedDate: Date | null; // nova prop
 }
 
-const CashFlowBox: React.FC<CashFlowBoxProps> = () => {
+const CashFlowBox: React.FC<CashFlowBoxProps> = ({ selectedDate, className }) => {
+
   const [income, setIncome] = useState('')
   const [extraincome, setextraIncome] = useState('')
   const [otherincome, setOthers] = useState('')
   const [total, setTotal] = useState('R$ 0,00')
   const [impostoRenda, setImpostoRenda] = useState('R$ 0,00')
+
 
 
   // Função para formatar valor monetário em BRL
@@ -132,13 +135,17 @@ const CashFlowBox: React.FC<CashFlowBoxProps> = () => {
  const fetchIncomeData = async () => {
     const token = await getToken()
 
-    if (!token) {
-      alert('Usuário não autenticado')
-      return
+    if (!selectedDate || !token) {
+      console.error("Usuário não autenticado ou data inválida");
+      return;
     }
 
+    const year = selectedDate.getFullYear();
+    const month = selectedDate.getMonth() + 1;
+
+   
     try {
-      const response = await fetch('http://localhost:3390/api/income/route', {
+      const response = await fetch(`http://localhost:3390/api/income/route?month=${month}&year=${year}`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -148,6 +155,7 @@ const CashFlowBox: React.FC<CashFlowBoxProps> = () => {
       if (!response.ok) {
         throw new Error('Erro ao buscar dados')
       }
+
 
       const fetchedData = await response.json();
       const cleanedData = parseIncomeData(fetchedData);
@@ -166,8 +174,12 @@ const CashFlowBox: React.FC<CashFlowBoxProps> = () => {
 
   // Chama a busca assim que o componente monta
   useEffect(() => {
-    fetchIncomeData()
-  }, [])
+    if (selectedDate) {
+    fetchIncomeData(); 
+  }
+}, [selectedDate]);
+
+
 
 
   return (

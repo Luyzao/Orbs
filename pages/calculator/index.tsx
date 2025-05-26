@@ -14,7 +14,7 @@ export default function Calculator() {
       <ToolBar selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
       <div className="flex flex-col md:flex-row gap-4 custom-scrollbar">
         <div className="flex flex-col w-full md:w-1/3">
-          <CashFlowBox />
+          <CashFlowBox selectedDate={selectedDate} />
           <Expenses selectedDate={selectedDate} />
         </div>
         <div className="w-full md:w-2/3 mt-4 md:mt-0">
