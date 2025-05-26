@@ -11,7 +11,9 @@ import { AuthProvider, useAuth } from '@/context/AuthContext'
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter()
-  const hideSidebar = router.pathname.startsWith('/auth')
+  const hideSidebar = ['/auth', '/forms'].some(prefix =>
+    router.pathname.startsWith(prefix)
+  );
 
   return (
     <AuthProvider>
