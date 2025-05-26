@@ -41,23 +41,30 @@ const SignUpRectangle: React.FC<SignUpRectangleProps> = () => {
   const handleSubmit = async () => {
     if (validateForm()) {
       try {
-        const { data, error } = await supabase.auth.signUp({
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
           email,
           password
         });
 
-        const user = data.user;
+        if (signUpError) {
+          throw signUpError;
+        }
 
-        if (error) {
-          throw error;
+        const user = signUpData.user;
+
+        if (!user?.id) {
+          throw new Error("User ID não disponível após signUp");
         }
 
         const fullName = `${name} ${surname}`.trim();
 
-        await supabase
+        const { data: upsertData, error: upsertError } = await supabase
           .from('User')
-          .upsert({ id: user?.id, name: fullName });
+          .upsert({ id: user.id, name: fullName });
 
+        if (upsertError) {
+          throw upsertError;
+        }
 
         alert("Cadastrado com sucesso!");
         setSubmitted(true);
@@ -65,6 +72,7 @@ const SignUpRectangle: React.FC<SignUpRectangleProps> = () => {
 
       } catch (error: any) {
         console.error("Erro ao criar a conta:", error.message);
+        alert("Erro ao criar a conta: " + error.message);
       }
     }
   };
