@@ -30,6 +30,21 @@ const LoginRectangle: React.FC<LoginRectangleProps> = () => {
     return emailValid && passwordValid
   }
 
+  const checkUserInForms = async (userId: string): Promise<boolean> => {
+    const { data, error } = await supabase
+      .from('Forms')
+      .select('id')
+      .eq('userId', userId)
+      .single();
+
+    if (error && error.code !== 'PGRST116') {
+      console.error('Erro ao buscar no Forms:', error);
+      throw error;
+    }
+
+    return !!data;
+  };
+
   const handleLogin = async () => {
     if (validateForm()) {
       try {
@@ -42,25 +57,26 @@ const LoginRectangle: React.FC<LoginRectangleProps> = () => {
           alert('Erro ao fazer login: ' + error.message)
         } else {
           alert('Login realizado com sucesso!')
-          router.push('/')
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
+
+          if (user) {
+            const exists = await checkUserInForms(user.id);
+
+            if (exists) {
+              console.log('Usuário já tem Forms');
+              window.location.href = '/';
+            } else {
+              console.log('Usuário NÃO tem Forms');
+              window.location.href = '/forms';
+            }
+          }
         }
       } catch (error) {
         console.error(error)
         alert('Erro desconhecido ao tentar fazer login.')
       }
-    }
-  }
-
-  const handleGoogleLogin = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/`,
-      },
-    })
-
-    if (error) {
-      console.error('Erro ao logar com Google:', error)
     }
   }
 
@@ -87,7 +103,7 @@ const LoginRectangle: React.FC<LoginRectangleProps> = () => {
       if (!existingUser) {
         const { error: insertError } = await supabase.from("User").insert({
           id: user.id,
-          name: user.user_metadata.full_name || "Usuário Google",
+          name: user.user_metadata.full_name || "Usuário",
         });
 
         if (insertError) {
@@ -188,27 +204,6 @@ const LoginRectangle: React.FC<LoginRectangleProps> = () => {
             Login
           </button>
 
-          <div className="flex items-center w-[203px] mt-4 md:w-[227px] lg:w-[247px]">
-            <div className="flex-grow h-px bg-[#BFBEBE]" />
-            <span className="mx-1 text-[#FFFFFF] font-poppins text-[11.5px] sm:text-[13px] xl:text-[14px]">
-              Ou
-            </span>
-            <div className="flex-grow h-px bg-[#BFBEBE]" />
-          </div>
-
-          <button onClick={handleGoogleLogin}
-            className="w-[210px] h-[30px] bg-[#D9D9D9] text-black font-poppins text-[11px] md:text-[12px] py-1 mt-3 border rounded-md flex items-center 
-          justify-center gap-2.5 sm:h-[32px] md:w-[230px] lg:w-[250px]"
-          >
-            <Image
-              width={1}
-              height={1}
-              className="w-[15px] h-auto xl:w-[18px]"
-              src="/images/google-icon.png"
-              alt="Google"
-            />
-            Continue com o Google
-          </button>
         </div>
       </div>
     </div>
