@@ -87,8 +87,6 @@ const CashFlowBox: React.FC<CashFlowBoxProps> = ({ selectedDate }) => {
         income: parseCurrencyToNumber(renda),
         extraincome: parseCurrencyToNumber(extraincome),
         otherincome: parseCurrencyToNumber(otherincome),
-        month: selectedDate ? selectedDate.toISOString() : null,
-        date: selectedDate ? selectedDate.toISOString() : null,
       }
       postIncome(Data)
     }
