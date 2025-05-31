@@ -1,125 +1,120 @@
 import React, { useState, useEffect } from 'react'
-import { supabase } from 'lib/supabaseClient'; 
-import { format } from 'date-fns';
+import { supabase } from 'lib/supabaseClient'
+import { format } from 'date-fns'
 
 interface CashFlowBoxProps {
-  className?: string;
-  selectedDate: Date | null; // nova prop
+  className?: string
+  selectedDate: Date | null // nova prop
 }
 
-const CashFlowBox: React.FC<CashFlowBoxProps> = ({ selectedDate, className }) => {
-
+const CashFlowBox: React.FC<CashFlowBoxProps> = ({ selectedDate }) => {
   const [income, setIncome] = useState('')
   const [extraincome, setextraIncome] = useState('')
   const [otherincome, setOthers] = useState('')
   const [total, setTotal] = useState('R$ 0,00')
   const [impostoRenda, setImpostoRenda] = useState('R$ 0,00')
 
-
-
   // Função para formatar valor monetário em BRL
   const formatCurrency = (value: string) => {
-    const onlyNumbers = value.replace(/\D/g, ''); // só números
-    const numberValue = Number(onlyNumbers) / 100;
+    const onlyNumbers = value.replace(/\D/g, '') // só números
+    const numberValue = Number(onlyNumbers) / 100
 
     // Se não for número válido, retorna vazio
-    if (isNaN(numberValue)) return '';
+    if (isNaN(numberValue)) return ''
 
     return numberValue.toLocaleString('pt-BR', {
       style: 'currency',
       currency: 'BRL',
-    });
-  };
+    })
+  }
 
   const formatCurrencyFromNumber = (value: number) => {
     return value.toLocaleString('pt-BR', {
       style: 'currency',
       currency: 'BRL',
-    });
-  };
-
+    })
+  }
 
   // Handlers para os inputs com formatação
   const handleIncomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatCurrency(e.target.value);
-    setIncome(formatted);
-  };
+    const formatted = formatCurrency(e.target.value)
+    setIncome(formatted)
+  }
 
   const handleExtraIncomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatCurrency(e.target.value);
-    setextraIncome(formatted);
-  };
+    const formatted = formatCurrency(e.target.value)
+    setextraIncome(formatted)
+  }
 
   const handleOthersChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatCurrency(e.target.value);
-    setOthers(formatted);
-  };
+    const formatted = formatCurrency(e.target.value)
+    setOthers(formatted)
+  }
 
   // Função para converter string formatada "R$ 1.234,56" em número float 1234.56 antes de enviar
   const parseCurrencyToNumber = (value: string) => {
-    if (!value) return 0;
+    if (!value) return 0
     // Remove "R$ ", pontos e troca vírgula por ponto
-    return Number(value.replace(/[R$\s\.]/g, '').replace(',', '.'));
-  };
+    return Number(value.replace(/[R$\s\.]/g, '').replace(',', '.'))
+  }
 
   const getToken = async () => {
     const {
       data: { session },
       error,
-    } = await supabase.auth.getSession();
+    } = await supabase.auth.getSession()
 
     if (error) {
-      console.error('Erro ao obter sessão:', error);
-      return null;
+      console.error('Erro ao obter sessão:', error)
+      return null
     }
 
     if (!session) {
-      console.log('Usuário não está logado');
-      return null;
+      console.log('Usuário não está logado')
+      return null
     }
 
-    return session.access_token;
-  };
+    return session.access_token
+  }
 
   const handleSave = async () => {
-  const token = await getToken();
+    const token = await getToken()
 
-  if (!token) {
-    alert('Usuário não autenticado');
-    return;
-  }
-
-  const data = {
-    income: parseCurrencyToNumber(income),
-    extraincome: parseCurrencyToNumber(extraincome),
-    otherincome: parseCurrencyToNumber(otherincome),
-    date: selectedDate ? selectedDate.toISOString() : null, // sata convertida para ISO string
-  };
-
-  try {
-    const response = await fetch('http://localhost:3390/api/income/route', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(data), // ✅ usa diretamente o objeto `data` com os campos certos
-    });
-
-    if (response.ok) {
-      alert('Dados salvos com sucesso!');
-      await fetchIncomeData();
-      
-    } else {
-      const errRes = await response.json();
-      console.error('Erro da API:', errRes);
-      alert('Erro ao salvar os dados.');
+    if (!token) {
+      alert('Usuário não autenticado')
+      return
     }
-  } catch (error) {
-    console.error('Erro ao enviar dados:', error);
-    alert('Erro na comunicação com o servidor.');
+
+    const data = {
+      income: parseCurrencyToNumber(income),
+      extraincome: parseCurrencyToNumber(extraincome),
+      otherincome: parseCurrencyToNumber(otherincome),
+      date: selectedDate ? selectedDate.toISOString() : null, // sata convertida para ISO string
+    }
+
+    try {
+      const response = await fetch('http://localhost:3390/api/income/route', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data), // ✅ usa diretamente o objeto `data` com os campos certos
+      })
+
+      if (response.ok) {
+        alert('Dados salvos com sucesso!')
+        await fetchIncomeData()
+      } else {
+        const errRes = await response.json()
+        console.error('Erro da API:', errRes)
+        alert('Erro ao salvar os dados.')
+      }
+    } catch (error) {
+      console.error('Erro ao enviar dados:', error)
+      alert('Erro na comunicação com o servidor.')
+    }
   }
-};
 
   function parseIncomeData(data: any) {
     return {
@@ -128,45 +123,42 @@ const CashFlowBox: React.FC<CashFlowBoxProps> = ({ selectedDate, className }) =>
       otherincome: formatCurrencyFromNumber(Number(data.otherincome) || 0),
       total: formatCurrencyFromNumber(Number(data.total) || 0),
       impostoRenda: formatCurrencyFromNumber(Number(data.impostoRenda) || 0),
-    };
+    }
   }
 
-
-
- const fetchIncomeData = async () => {
+  const fetchIncomeData = async () => {
     const token = await getToken()
 
     if (!selectedDate || !token) {
-      console.error("Usuário não autenticado ou data inválida");
-      return;
+      console.error('Usuário não autenticado ou data inválida')
+      return
     }
 
-    const year = selectedDate.getFullYear();
-    const month = selectedDate.getMonth() + 1;
+    const year = selectedDate.getFullYear()
+    const month = selectedDate.getMonth() + 1
 
-   
     try {
-      const response = await fetch(`http://localhost:3390/api/income/route?month=${month}&year=${year}`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        `http://localhost:3390/api/income/route?month=${month}&year=${year}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      })
+      )
 
       if (!response.ok) {
         throw new Error('Erro ao buscar dados')
       }
 
-
-      const fetchedData = await response.json();
-      const cleanedData = parseIncomeData(fetchedData);
-      setIncome(cleanedData.income); // aqui income é string
-      setextraIncome(cleanedData.extraincome);
-      setOthers(cleanedData.otherincome);
-      setTotal(cleanedData.total);
-      setImpostoRenda(cleanedData.impostoRenda);
-
-
+      const fetchedData = await response.json()
+      const cleanedData = parseIncomeData(fetchedData)
+      setIncome(cleanedData.income) // aqui income é string
+      setextraIncome(cleanedData.extraincome)
+      setOthers(cleanedData.otherincome)
+      setTotal(cleanedData.total)
+      setImpostoRenda(cleanedData.impostoRenda)
     } catch (error) {
       console.error(error)
       alert('Erro ao carregar dados')
@@ -176,12 +168,9 @@ const CashFlowBox: React.FC<CashFlowBoxProps> = ({ selectedDate, className }) =>
   // Chama a busca assim que o componente monta
   useEffect(() => {
     if (selectedDate) {
-    fetchIncomeData(); 
-  }
-}, [selectedDate]);
-
-
-
+      fetchIncomeData()
+    }
+  }, [selectedDate])
 
   return (
     <div className="relative ml-2 mt-8 sm:ml-2 sm:mt-8 md:ml-2 md:mt-4 lg:ml-2 lg:mt-4 xl:ml-2 xl:mt-4">
@@ -267,7 +256,7 @@ const CashFlowBox: React.FC<CashFlowBoxProps> = ({ selectedDate, className }) =>
             className="font-comfortaa bg-[#E1E1E1] text-[#000000] placeholder:text-[#000000] w-full p-2 rounded-lg focus:outline-none focus:shadow-md"
           />
         </div>
-          {/* Botão de Salvar */}
+        {/* Botão de Salvar */}
         <button
           onClick={handleSave}
           className="w-1/5 h-9/10 mt-1 mb-2 bg-[#383577] font-poppins text-white rounded-md shadow hover:bg-[#2f2c6e] transition"

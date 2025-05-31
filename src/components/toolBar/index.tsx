@@ -2,18 +2,21 @@ import { RiMoneyDollarCircleLine } from 'react-icons/ri'
 import { LuMoon } from 'react-icons/lu'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import DatePicker from "react-datepicker";
-import React from 'react';
-import "react-datepicker/dist/react-datepicker.css";
-import { AiOutlineCalendar } from 'react-icons/ai';
-import { ptBR } from 'date-fns/locale';
+import DatePicker from 'react-datepicker'
+import React from 'react'
+import 'react-datepicker/dist/react-datepicker.css'
+import { AiOutlineCalendar } from 'react-icons/ai'
+import { ptBR } from 'date-fns/locale'
 
 interface ToolBarProps {
-  selectedDate: Date | null;
-  setSelectedDate: React.Dispatch<React.SetStateAction<Date | null>>;
+  selectedDate: Date | null
+  setSelectedDate: any
 }
 
-const ToolBar: React.FC<ToolBarProps> = ({ selectedDate, setSelectedDate }) => {
+const ToolBar: React.FC<ToolBarProps> = ({
+  selectedDate,
+  setSelectedDate,
+}: any) => {
   const router = useRouter()
 
   if (router.pathname === '/calculator') {
@@ -28,7 +31,7 @@ const ToolBar: React.FC<ToolBarProps> = ({ selectedDate, setSelectedDate }) => {
               selected={selectedDate}
               onChange={(date: Date | null) => {
                 if (date) {
-                  console.log("Mês selecionado:", date.getMonth() + 1)
+                  console.log('Mês selecionado:', date.getMonth() + 1)
                   setSelectedDate(date)
                 }
               }}
@@ -52,7 +55,7 @@ const ToolBar: React.FC<ToolBarProps> = ({ selectedDate, setSelectedDate }) => {
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   // Demais páginas
@@ -60,7 +63,8 @@ const ToolBar: React.FC<ToolBarProps> = ({ selectedDate, setSelectedDate }) => {
     <div className="w-full font-comfortaa flex flex-col xl:flex-row justify-between items-start sm:items-center gap-3">
       <div className="text-black flex flex-col w-auto items-center xl:items-start">
         <h1 className="lg:text-xl xl:text-2xl">
-          <span className="text-[#383577]">Bem-vindo à sua</span> órbita financeira!
+          <span className="text-[#383577]">Bem-vindo à sua</span> órbita
+          financeira!
         </h1>
         <p className="text-xs sm:text-xs md:text-sm lg:text-sm ">
           Olá, usuario123
@@ -86,7 +90,7 @@ const ToolBar: React.FC<ToolBarProps> = ({ selectedDate, setSelectedDate }) => {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default ToolBar;
+export default ToolBar
