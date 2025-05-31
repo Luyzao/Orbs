@@ -1,5 +1,6 @@
 import { RadioButton } from 'primereact/radiobutton';
 import { ProgressBar } from 'primereact/progressbar';
+import { InputText } from 'primereact/inputtext'
 import { useState } from 'react';
 
 const perguntas = [
@@ -37,10 +38,10 @@ const perguntas = [
     },
     {
         id: 'dinheiro',
-        pergunta: 'Quanto você gostaria de poupar por mês?',
+        pergunta: 'Quanto deseja guardar por mês?',
         tipo: 'radio',
         opcoes: [
-            { key: '1', name: 'Nada, desejo gastar tudo que ganho.' },
+            { key: '1', name: 'Nada.' },
             { key: '2', name: 'R$50,00' },
             { key: '3', name: 'R$100,00' },
             { key: '4', name: 'R$200,00' },
@@ -50,28 +51,67 @@ const perguntas = [
     },
 ];
 
-export default function Login() {
+export default function Forms() {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [answers, setAnswers] = useState<{ [key: string]: string }>({});
     const currentQuestion = perguntas[currentIndex];
+    const isAnswered = !!answers[currentQuestion.id];
 
     // Valor da barra de progresso em %
     const progressValue = ((currentIndex) / (perguntas.length - 1)) * 100;
 
     // Para armazenar a resposta selecionada
     const handleRadioChange = (value: any) => {
-        setAnswers(prev => ({ ...prev, [currentQuestion.id]: value }));
+        const currentValue = answers[currentQuestion.id];
+
+        if (currentValue === value) {
+            // Se clicar no mesmo valor, desmarca
+            const newAnswers = { ...answers };
+            delete newAnswers[currentQuestion.id];
+
+            // Se for na pergunta de filhos e desmarcar "Sim", também limpa quantidade
+            if (currentQuestion.id === 'filhos') {
+                delete newAnswers['quantidade_filhos'];
+            }
+
+            setAnswers(newAnswers);
+        } else {
+            // Se selecionar "Não", também limpa quantidade de filhos
+            if (currentQuestion.id === 'filhos' && value === '2') {
+                setAnswers(prev => {
+                    const newAnswers = { ...prev };
+                    delete newAnswers['quantidade_filhos'];
+                    return { ...newAnswers, [currentQuestion.id]: value };
+                });
+            } else {
+                setAnswers(prev => ({ ...prev, [currentQuestion.id]: value }));
+            }
+        }
     };
 
-    const handleInputChange = (e: { target: { value: any; }; }) => {
-        setAnswers(prev => ({ ...prev, [currentQuestion.id]: e.target.value }));
+    const handleBack = () => {
+        if (currentIndex > 0) {
+            setCurrentIndex(currentIndex - 1);
+        }
     };
 
     const handleNext = () => {
         if (currentIndex < perguntas.length - 1) {
+            const nextQuestionId = perguntas[currentIndex + 1].id;
+
+            setAnswers(prev => {
+            // Remove a resposta da próxima pergunta para garantir que ela comece limpa
+            const newAnswers = { ...prev };
+            delete newAnswers[nextQuestionId];
+            // Se for pergunta 'filhos', limpa também a quantidade
+            if (nextQuestionId === 'filhos') {
+                delete newAnswers['quantidade_filhos'];
+            }
+            return newAnswers;
+            });
+
             setCurrentIndex(currentIndex + 1);
         } else {
-            // Aqui você pode enviar os dados para o banco
             console.log('Respostas finais:', answers);
         }
     };
@@ -88,40 +128,118 @@ export default function Login() {
             <div className="flex flex-col gap-4 py-6">
                 <p className="font-comfortaa text-3xl px-6 text-[#D9D9D9]">Orbs</p>
                 <p className="font-comfortaa text-[12px] px-6 text-[#D9D9D9]">Quase lá! Precisamos de mais alguns dados.</p>
-                <p className="font-comfortaa text-4xl px-6 text-[#FFFFFF]">{currentQuestion.pergunta}</p>
+                <div className='flex flex-row mr-4'>
+                    {currentIndex > 0 && (
+                        <button
+                            onClick={handleBack}
+                            className="flex items-center gap-2 text-white text-sm hover:underline pl-6"
+                        >
+                            <img src="/vector/back_arrow_forms.svg" alt="Voltar" className="w-8 h-8" />
+                        </button>
+                    )}
 
+                    <p
+                    className={`font-comfortaa text-[#FFFFFF] text-xl 
+                     ${currentIndex >= 1 ? 'px-1' : 'px-6'}`}
+                    >
+                    {currentQuestion.pergunta}
+                    </p>
+
+                </div>
                 <div className="px-6">
-                    {currentQuestion.tipo === 'radio' && currentQuestion.opcoes && currentQuestion.opcoes.map((option) => (
-                        <div key={option.key} className="flex align-items-center font-comfortaa text-md mb-2">
-                            <RadioButton
-                                inputId={option.key}
-                                name={currentQuestion.id}
-                                value={option.key}
-                                onChange={(e) => handleRadioChange(e.value)}
-                                checked={answers[currentQuestion.id] === option.key}
-                            />
-                            <label htmlFor={option.key} className="ml-2">{option.name}</label>
-                        </div>
-                    ))}
+                    {currentQuestion.id === 'filhos' ? (
+                        <>
+                            {currentQuestion.opcoes
+                                .filter(option => {
+                                    // Se "Sim" for selecionado, esconde a opção "Não"
+                                    if (answers['filhos'] === '1') {
+                                        return option.key !== '2';
+                                    }
+                                    return true;
+                                })
+                                .map((option) => (
+                                    <div key={option.key} className="flex align-items-center font-comfortaa text-md mb-2">
+                                        <RadioButton
+                                            inputId={option.key}
+                                            name={currentQuestion.id}
+                                            value={option.key}
+                                            onChange={(e) => handleRadioChange(e.value)}
+                                            checked={answers[currentQuestion.id] === option.key}
+                                        />
+                                        <label htmlFor={option.key} className="ml-2">{option.name}</label>
+                                    </div>
+                                ))}
 
-                    {currentQuestion.tipo === 'text' && (
-                        <input
-                            type="text"
-                            className="w-full p-2 rounded border border-gray-300"
-                            value={answers[currentQuestion.id] || ''}
-                            onChange={handleInputChange}
-                        />
+                            {answers['filhos'] === '1' && (
+                                <div className="mt-2">
+                                    <label className="block mb-1 font-comfortaa">Quantos?*</label>
+                                    <InputText
+                                        type="number"
+                                        min="1"
+                                        step="1"
+                                        className="w-[100px] !bg-[#515057] p-2 rounded-xl border border-[#515057] text-[#000000]
+                                        font-comfortaa focus:outline-none focus:ring-0 focus:border-transparent text-[16px]"
+                                        value={answers['quantidade_filhos'] || ''}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            if (/^\d*$/.test(value)) {
+                                                setAnswers(prev => ({ ...prev, ['quantidade_filhos']: value }));
+                                            }
+                                        }}
+                                        placeholder="Quantos"
+                                    />
+                                </div>
+                            )}
+                        </>
+                    ) : (
+                        <>
+                            {currentQuestion.opcoes?.map((option) => (
+                                <div key={option.key} className="flex align-items-center font-comfortaa text-md mb-2">
+                                    <RadioButton
+                                        inputId={option.key}
+                                        name={currentQuestion.id}
+                                        value={option.key}
+                                        onChange={(e) => handleRadioChange(e.value)}
+                                        checked={answers[currentQuestion.id] === option.key}
+                                    />
+                                    <label htmlFor={option.key} className="ml-2">{option.name}</label>
+                                </div>
+                            ))}
+
+                            {currentQuestion.id === 'dinheiro' && answers['dinheiro'] === '7' && (
+                            <div className="mt-2">
+                                <label className="block mb-1 font-comfortaa">Quantia*</label>
+                                <InputText
+                                    type="text"
+                                    min="1"
+                                    step="1"
+                                    className="w-[100px] !bg-[#515057] p-2 rounded-xl border border-[#515057] text-[#000000]
+                                        font-comfortaa focus:outline-none focus:ring-0 focus:border-transparent text-[16px]"
+                                    value={answers['dinheiro_outro'] || ''}
+                                    onChange={(e) => {
+                                        const value = e.target.value.replace(',', '.');
+                                        if (/^\d*\.?\d*$/.test(value)) {
+                                            setAnswers(prev => ({ ...prev, ['dinheiro_outro']: value }));
+                                        }
+                                    }}
+                                    placeholder="Quantia"
+                                />
+                            </div>
+                        )}
+                        </>
                     )}
                 </div>
 
                 <div className='px-6 py-6 flex items-center gap-4'>
                     <button
                         onClick={handleNext}
-                        className="w-[120px] h-[32px] bg-indigo-500 font-poppins text-[18px] rounded-lg flex items-center justify-center"
+                        disabled={!isAnswered}
+                        className={`w-[120px] h-[32px] ${
+                            isAnswered ? 'bg-indigo-500' : 'bg-gray-400 cursor-not-allowed'
+                        } font-poppins text-[18px] rounded-lg flex items-center justify-center`}
                     >
                         {currentIndex < perguntas.length - 1 ? 'Próximo' : 'Enviar'}
                     </button>
-
                     <ProgressBar
                         value={progressValue}
                         showValue={false}
