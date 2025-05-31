@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { InputText } from 'primereact/inputtext'
 import { supabase } from 'lib/supabaseClient'
 import { useRouter } from 'next/router'
@@ -50,6 +50,57 @@ const LoginRectangle: React.FC<LoginRectangleProps> = () => {
       }
     }
   }
+
+  const handleGoogleLogin = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/`,
+      },
+    })
+
+    if (error) {
+      console.error('Erro ao logar com Google:', error)
+    }
+  }
+
+  useEffect(() => {
+    async function checkAndInsertUser() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) return;
+
+      // Verifica se já existe na tabela User
+      const { data: existingUser, error } = await supabase
+        .from("User")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      if (error && error.code !== "PGRST116") {
+        console.error("Erro ao buscar usuário", error);
+        return;
+      }
+
+      if (!existingUser) {
+        const { error: insertError } = await supabase.from("User").insert({
+          id: user.id,
+          name: user.user_metadata.full_name || "Usuário Google",
+        });
+
+        if (insertError) {
+          console.error("Erro ao inserir usuário", insertError);
+        } else {
+          console.log("Usuário inserido na tabela User");
+          alert("Cadastro com sucesso!");
+        }
+      }
+    }
+
+    checkAndInsertUser();
+  }, []);
 
   return (
     <div
@@ -145,9 +196,9 @@ const LoginRectangle: React.FC<LoginRectangleProps> = () => {
             <div className="flex-grow h-px bg-[#BFBEBE]" />
           </div>
 
-          <button
+          <button onClick={handleGoogleLogin}
             className="w-[210px] h-[30px] bg-[#D9D9D9] text-black font-poppins text-[11px] md:text-[12px] py-1 mt-3 border rounded-md flex items-center 
-        justify-center gap-2.5 sm:h-[32px] md:w-[230px] lg:w-[250px]"
+          justify-center gap-2.5 sm:h-[32px] md:w-[230px] lg:w-[250px]"
           >
             <Image
               width={1}
