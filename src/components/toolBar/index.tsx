@@ -9,7 +9,7 @@ import { AiOutlineCalendar } from 'react-icons/ai'
 import { ptBR } from 'date-fns/locale'
 
 interface ToolBarProps {
-  selectedDate: Date | null
+  selectedDate: Date | any
   setSelectedDate: any
 }
 

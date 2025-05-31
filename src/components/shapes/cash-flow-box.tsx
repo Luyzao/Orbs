@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from 'lib/supabaseClient'
-import { format } from 'date-fns'
+import { postIncome, putIncome } from '@/services/income'
+import { getUserByID } from '@/services/user'
 
 interface CashFlowBoxProps {
   className?: string
@@ -8,11 +9,14 @@ interface CashFlowBoxProps {
 }
 
 const CashFlowBox: React.FC<CashFlowBoxProps> = ({ selectedDate }) => {
-  const [income, setIncome] = useState('')
-  const [extraincome, setextraIncome] = useState('')
-  const [otherincome, setOthers] = useState('')
-  const [total, setTotal] = useState('R$ 0,00')
-  const [impostoRenda, setImpostoRenda] = useState('R$ 0,00')
+  const [extraincome, setextraIncome] = useState<any>('')
+  const [otherincome, setOthers] = useState<any>('')
+  const [total, setTotal] = useState<any>('R$ 0,00')
+  const [impostoRenda, setImpostoRenda] = useState<any>('R$ 0,00')
+  const [renda, setRenda] = useState<any>('R$ 0,00')
+  const [idUser, setIdUser] = useState<any>()
+  const [income, setIncome] = useState<any>('R$ 0,00')
+  const [incomes, setIncomes] = useState<any>()
 
   // Função para formatar valor monetário em BRL
   const formatCurrency = (value: string) => {
@@ -28,17 +32,17 @@ const CashFlowBox: React.FC<CashFlowBoxProps> = ({ selectedDate }) => {
     })
   }
 
-  const formatCurrencyFromNumber = (value: number) => {
-    return value.toLocaleString('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    })
-  }
+  // const formatCurrencyFromNumber = (value: number) => {
+  //   return value.toLocaleString('pt-BR', {
+  //     style: 'currency',
+  //     currency: 'BRL',
+  //   })
+  // }
 
   // Handlers para os inputs com formatação
   const handleIncomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatCurrency(e.target.value)
-    setIncome(formatted)
+    setRenda(formatted)
   }
 
   const handleExtraIncomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,125 +56,141 @@ const CashFlowBox: React.FC<CashFlowBoxProps> = ({ selectedDate }) => {
   }
 
   // Função para converter string formatada "R$ 1.234,56" em número float 1234.56 antes de enviar
-  const parseCurrencyToNumber = (value: string) => {
+  const parseCurrencyToNumber = (value: any) => {
     if (!value) return 0
-    // Remove "R$ ", pontos e troca vírgula por ponto
+
+    // Se for número, retorna direto
+    if (typeof value === 'number') return value
+
+    // Se não for string, tenta forçar para string
+    if (typeof value !== 'string') value = String(value)
+
+    // Remove "R$ ", espaços, pontos e troca vírgula por ponto
     return Number(value.replace(/[R$\s\.]/g, '').replace(',', '.'))
   }
 
-  const getToken = async () => {
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.getSession()
-
-    if (error) {
-      console.error('Erro ao obter sessão:', error)
-      return null
-    }
-
-    if (!session) {
-      console.log('Usuário não está logado')
-      return null
-    }
-
-    return session.access_token
-  }
-
   const handleSave = async () => {
-    const token = await getToken()
-
-    if (!token) {
-      alert('Usuário não autenticado')
-      return
-    }
-
-    const data = {
-      income: parseCurrencyToNumber(income),
-      extraincome: parseCurrencyToNumber(extraincome),
-      otherincome: parseCurrencyToNumber(otherincome),
-      date: selectedDate ? selectedDate.toISOString() : null, // sata convertida para ISO string
-    }
-
-    try {
-      const response = await fetch('http://localhost:3390/api/income/route', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(data), // ✅ usa diretamente o objeto `data` com os campos certos
-      })
-
-      if (response.ok) {
-        alert('Dados salvos com sucesso!')
-        await fetchIncomeData()
-      } else {
-        const errRes = await response.json()
-        console.error('Erro da API:', errRes)
-        alert('Erro ao salvar os dados.')
+    if (incomes && incomes.length > 0) {
+      const Data = {
+        id: income.id,
+        userId: idUser,
+        income: parseCurrencyToNumber(renda),
+        extraincome: parseCurrencyToNumber(extraincome),
+        otherincome: parseCurrencyToNumber(otherincome),
+        month: selectedDate,
+        date: selectedDate,
       }
-    } catch (error) {
-      console.error('Erro ao enviar dados:', error)
-      alert('Erro na comunicação com o servidor.')
-    }
-  }
-
-  function parseIncomeData(data: any) {
-    return {
-      income: formatCurrencyFromNumber(Number(data.income) || 0), // formata para R$
-      extraincome: formatCurrencyFromNumber(Number(data.extraincome) || 0),
-      otherincome: formatCurrencyFromNumber(Number(data.otherincome) || 0),
-      total: formatCurrencyFromNumber(Number(data.total) || 0),
-      impostoRenda: formatCurrencyFromNumber(Number(data.impostoRenda) || 0),
-    }
-  }
-
-  const fetchIncomeData = async () => {
-    const token = await getToken()
-
-    if (!selectedDate || !token) {
-      console.error('Usuário não autenticado ou data inválida')
-      return
-    }
-
-    const year = selectedDate.getFullYear()
-    const month = selectedDate.getMonth() + 1
-
-    try {
-      const response = await fetch(
-        `http://localhost:3390/api/income/route?month=${month}&year=${year}`,
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      )
-
-      if (!response.ok) {
-        throw new Error('Erro ao buscar dados')
+      putIncome(Data)
+    } else {
+      const Data = {
+        userId: idUser,
+        income: parseCurrencyToNumber(renda),
+        extraincome: parseCurrencyToNumber(extraincome),
+        otherincome: parseCurrencyToNumber(otherincome),
+        month: selectedDate ? selectedDate.toISOString() : null,
+        date: selectedDate ? selectedDate.toISOString() : null,
       }
-
-      const fetchedData = await response.json()
-      const cleanedData = parseIncomeData(fetchedData)
-      setIncome(cleanedData.income) // aqui income é string
-      setextraIncome(cleanedData.extraincome)
-      setOthers(cleanedData.otherincome)
-      setTotal(cleanedData.total)
-      setImpostoRenda(cleanedData.impostoRenda)
-    } catch (error) {
-      console.error(error)
-      alert('Erro ao carregar dados')
+      postIncome(Data)
     }
   }
 
-  // Chama a busca assim que o componente monta
+  function formatDateToMySQL(dateInput: Date | string): string {
+    if (typeof dateInput === 'string') {
+      // Exemplo: "2025-05-31T19:07:13.094Z"
+      // Pega só 'yyyy-mm'
+      return dateInput.split('T')[0].slice(0, 7) // "2025-05"
+    } else {
+      // Se for Date, formata para 'yyyy-mm'
+      const pad = (n: number, z = 2) => ('00' + n).slice(-z)
+      return dateInput.getFullYear() + '-' + pad(dateInput.getMonth() + 1)
+    }
+  }
+
+  function calcularImpostoRenda(total: number): number {
+    console.log('aquiiiiii', total)
+    let imposto = 0
+
+    const faixas = [
+      { limite: 2259.2, aliquota: 0, deducao: 0 },
+      { limite: 2826.65, aliquota: 0.075, deducao: 169.44 },
+      { limite: 3751.05, aliquota: 0.15, deducao: 381.44 },
+      { limite: 4664.68, aliquota: 0.225, deducao: 662.77 },
+      { limite: Infinity, aliquota: 0.275, deducao: 896.0 },
+    ]
+
+    for (let i = faixas.length - 1; i >= 0; i--) {
+      const faixa = faixas[i]
+      if (total > faixa.limite) {
+        imposto = total * faixa.aliquota - faixa.deducao
+        break
+      }
+    }
+
+    return imposto > 0 ? Number(imposto.toFixed(2)) : 0
+  }
+
   useEffect(() => {
-    if (selectedDate) {
+    const getUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+      if (user) setIdUser(user.id)
+    }
+    getUser()
+  }, [])
+
+  // 1. useEffect que busca e seta income
+  useEffect(() => {
+    if (selectedDate && idUser) {
+      const fetchIncomeData = async () => {
+        try {
+          const response = await getUserByID(idUser)
+          const allIncome = response.data.Income
+          setIncomes(allIncome)
+
+          if (allIncome && selectedDate) {
+            const formattedSelectedDate = formatDateToMySQL(selectedDate)
+
+            const filteredIncome = allIncome.filter((income: any) => {
+              const incomeDate = formatDateToMySQL(income.date)
+              return incomeDate === formattedSelectedDate
+            })
+
+            // Aqui: seta o objeto encontrado ou null
+            setIncome(filteredIncome[0] || null)
+          }
+        } catch (error) {
+          console.error(error)
+        }
+      }
+
       fetchIncomeData()
     }
-  }, [selectedDate])
+  }, [selectedDate, idUser])
+
+  // 2. useEffect que calcula os valores após income estar definido
+  useEffect(() => {
+    if (income) {
+      const extraincome = Number(income.extraincome ?? 0)
+      const otherincome = Number(income.otherincome ?? 0)
+      const impostoRenda = calcularImpostoRenda(extraincome + otherincome)
+
+      const total = extraincome + otherincome + impostoRenda
+
+      setextraIncome(extraincome)
+      setOthers(otherincome)
+      setTotal(total)
+      setImpostoRenda(impostoRenda)
+      setRenda(income.income)
+    } else {
+      // se income for null, zera tudo
+      setextraIncome('0,00')
+      setOthers('0,00')
+      setTotal('0,00')
+      setImpostoRenda('0,00')
+      setRenda('0,00')
+    }
+  }, [income])
 
   return (
     <div className="relative ml-2 mt-8 sm:ml-2 sm:mt-8 md:ml-2 md:mt-4 lg:ml-2 lg:mt-4 xl:ml-2 xl:mt-4">
@@ -224,7 +244,7 @@ const CashFlowBox: React.FC<CashFlowBoxProps> = ({ selectedDate }) => {
           </label>
           <input
             type="text"
-            value={income}
+            value={renda}
             onChange={handleIncomeChange}
             placeholder="R$ 00,00"
             className="font-comfortaa bg-[#E1E1E1] text-[#000000] placeholder:text-[#000000] w-full p-2 rounded-lg focus:outline-none focus:shadow-md"

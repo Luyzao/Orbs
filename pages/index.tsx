@@ -164,9 +164,9 @@ export default function Home() {
               <div className="flex flex-col items-center text-black w-12 md:w-4 bg-gray-50 rounded-xl shadow-xl gap-3 h-15rem justify-center">
                 <p className="text-4xl font-bol font-poppins">Saldo</p>
                 <p className="text-2xl text-[#1E195B] font-poppins">
-                  R${user?.balance.value}
+                  R${user?.balance?.value}
                 </p>
-                <p className="text-xs">{user?.balance.updatedAt}</p>
+                <p className="text-xs">{user?.balance?.updatedAt}</p>
                 <button
                   onClick={() => setVisible(true)}
                   className="flex items-center gap-1 bg-gray-200 p-1 px-3 rounded-lg text-sm"
