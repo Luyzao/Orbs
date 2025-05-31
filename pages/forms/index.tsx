@@ -8,25 +8,12 @@ const perguntas = [
     {
         id: 'media_salarial',
         pergunta: 'Qual sua média salarial?',
-        tipo: 'radio',
-        opcoes: [
-            { key: '1', name: 'Até R$2.000' },
-            { key: '2', name: 'De R$2.001 a R$5.000' },
-            { key: '3', name: 'De R$5.001 a R$10.000' },
-            { key: '4', name: 'Acima de R$10.000' }
-        ]
+        tipo: 'input', 
     },
     {
         id: 'idade',
         pergunta: 'Qual sua idade?',
-        tipo: 'radio',
-        opcoes: [
-            { key: '1', name: 'Abaixo de 18 anos' },
-            { key: '2', name: '18 a 24 anos' },
-            { key: '3', name: '25 a 34 anos' },
-            { key: '4', name: '35 a 44 anos' },
-            { key: '5', name: 'Acima de 45 anos' }
-        ]
+        tipo: 'input',
     },
     {
         id: 'filhos',
@@ -126,7 +113,7 @@ export default function Forms() {
 
     const getOptionLabel = (questionId: string, key: string) => {
         const question = perguntas.find(q => q.id === questionId);
-        const option = question?.opcoes.find(o => o.key === key);
+        const option = question?.opcoes?.find(o => o.key === key);
         return option?.name || '';
     };
 
@@ -143,8 +130,8 @@ export default function Forms() {
 
             const payload = {
                 userId: user.id,
-                media_salarial: getOptionLabel('media_salarial', answers.media_salarial),
-                idade: getOptionLabel('idade', answers.idade),
+                media_salarial: parseFloat((answers.media_salarial || '0').replace(',', '.')).toFixed(2),
+                idade: parseInt(answers.idade || '0', 10),
                 quantidade_filhos: answers.filhos === '1' 
                     ? (answers.quantidade_filhos || '0') 
                     : '0',
@@ -210,28 +197,52 @@ export default function Forms() {
 
                 </div>
                 <div className="px-6 xl:px-8 xl:mt-6">
-                    {currentQuestion.id === 'filhos' ? (
+                    {currentQuestion.tipo === 'input' ? (
                         <>
-                            {currentQuestion.opcoes
-                                .filter(option => {
-                                
-                                    if (answers['filhos'] === '1') {
-                                        return option.key !== '2';
+                            <InputText
+                                type={currentQuestion.id === 'idade' ? 'number' : 'text'}
+                                className="w-[200px] !bg-[#515057] p-2 rounded-xl border border-[#515057] text-[#000000]
+                                    font-comfortaa focus:outline-none focus:ring-0 focus:border-transparent text-[16px]"
+                                value={answers[currentQuestion.id] || ''}
+                                onChange={(e) => {
+                                    let value = e.target.value;
+
+                                    if (currentQuestion.id === 'media_salarial') {
+                                        // Permite números com até duas casas decimais
+                                        value = value.replace(',', '.');
+                                        if (/^\d*\.?\d{0,2}$/.test(value)) {
+                                            setAnswers(prev => ({ ...prev, [currentQuestion.id]: value }));
+                                        }
+                                    } else if (currentQuestion.id === 'idade') {
+                                        // Apenas inteiros positivos
+                                        if (/^\d*$/.test(value)) {
+                                            setAnswers(prev => ({ ...prev, [currentQuestion.id]: value }));
+                                        }
                                     }
-                                    return true;
-                                })
-                                .map((option) => (
-                                    <div key={option.key} className="flex items-center font-comfortaa text-md mb-2">
-                                        <RadioButton
-                                            inputId={option.key}
-                                            name={currentQuestion.id}
-                                            value={option.key}
-                                            onChange={(e) => handleRadioChange(e.value)}
-                                            checked={answers[currentQuestion.id] === option.key}
-                                        />
-                                        <label htmlFor={option.key} className="ml-2">{option.name}</label>
-                                    </div>
-                                ))}
+                                }}
+                                placeholder={currentQuestion.id === 'media_salarial' ? "Ex: 4500.00" : "Ex: 30"}
+                            />
+                        </>
+                    ) : currentQuestion.id === 'filhos' ? (
+                        // Mantém a lógica dos filhos (igual antes)
+                        <>
+                            {currentQuestion.opcoes?.filter(option => {
+                                if (answers['filhos'] === '1') {
+                                    return option.key !== '2';
+                                }
+                                return true;
+                            }).map((option) => (
+                                <div key={option.key} className="flex items-center font-comfortaa text-md mb-2">
+                                    <RadioButton
+                                        inputId={option.key}
+                                        name={currentQuestion.id}
+                                        value={option.key}
+                                        onChange={(e) => handleRadioChange(e.value)}
+                                        checked={answers[currentQuestion.id] === option.key}
+                                    />
+                                    <label htmlFor={option.key} className="ml-2">{option.name}</label>
+                                </div>
+                            ))}
 
                             {answers['filhos'] === '1' && (
                                 <div className="mt-2">
@@ -241,7 +252,7 @@ export default function Forms() {
                                         min="1"
                                         step="1"
                                         className="w-[100px] !bg-[#515057] p-2 rounded-xl border border-[#515057] text-[#000000]
-                                        font-comfortaa focus:outline-none focus:ring-0 focus:border-transparent text-[16px]"
+                                            font-comfortaa focus:outline-none focus:ring-0 focus:border-transparent text-[16px]"
                                         value={answers['quantidade_filhos'] || ''}
                                         onChange={(e) => {
                                             const value = e.target.value;
@@ -270,28 +281,27 @@ export default function Forms() {
                             ))}
 
                             {currentQuestion.id === 'dinheiro' && answers['dinheiro'] === '7' && (
-                            <div className="mt-2">
-                                <label className="block mb-1 font-comfortaa">Quantia*</label>
-                                <InputText
-                                    type="text"
-                                    min="1"
-                                    step="1"
-                                    className="w-[100px] !bg-[#515057] p-2 rounded-xl border border-[#515057] text-[#000000]
-                                        font-comfortaa focus:outline-none focus:ring-0 focus:border-transparent text-[16px]"
-                                    value={answers['dinheiro_outro'] || ''}
-                                    onChange={(e) => {
-                                        const value = e.target.value.replace(',', '.');
-                                        if (/^\d*\.?\d*$/.test(value)) {
-                                            setAnswers(prev => ({ ...prev, ['dinheiro_outro']: value }));
-                                        }
-                                    }}
-                                    placeholder="Quantia"
-                                />
-                            </div>
-                        )}
+                                <div className="mt-2">
+                                    <label className="block mb-1 font-comfortaa">Quantia*</label>
+                                    <InputText
+                                        type="text"
+                                        className="w-[100px] !bg-[#515057] p-2 rounded-xl border border-[#515057] text-[#000000]
+                                            font-comfortaa focus:outline-none focus:ring-0 focus:border-transparent text-[16px]"
+                                        value={answers['dinheiro_outro'] || ''}
+                                        onChange={(e) => {
+                                            const value = e.target.value.replace(',', '.');
+                                            if (/^\d*\.?\d*$/.test(value)) {
+                                                setAnswers(prev => ({ ...prev, ['dinheiro_outro']: value }));
+                                            }
+                                        }}
+                                        placeholder="Quantia"
+                                    />
+                                </div>
+                            )}
                         </>
                     )}
                 </div>
+
 
                 <div className='px-6 py-6 flex items-center gap-4 xl:px-8 xl:mt-6'>
                     <button
