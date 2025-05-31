@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import "react-datepicker/dist/react-datepicker.css";
 import { AiOutlineCalendar } from 'react-icons/ai';
 import { ptBR } from 'date-fns/locale';
+import { supabase } from 'lib/supabaseClient'
 
 interface ToolBarProps {
   selectedDate: Date | any
@@ -25,12 +26,36 @@ const ToolBar: React.FC<ToolBarProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
-  // Dados do usuário - você deve trocar pra pegar de onde tiver os dados reais
-  // Pode ser do contexto, estado global, ou uma chamada API que já fez em outro lugar
-  const salario = 5000;
-  const idade = 30;
-  const filhos = 2;
-  const metaEconomia = 1000;
+  const fetchUserFormsData = async () => {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError) {
+      console.error('Erro ao obter usuário:', userError);
+      return null;
+    }
+
+    if (!user) {
+      console.log('Nenhum usuário logado');
+      return null;
+    }
+
+    const { data, error } = await supabase
+      .from('Forms')
+      .select('media_salarial, idade, quantidade_filhos, dinheiro')
+      .eq('userId', user.id)
+      .single();
+
+    if (error) {
+      console.error('Erro ao buscar dados do Forms:', error);
+      return null;
+    }
+
+    console.log('Dados do Forms:', data);
+    return data;
+  };
 
   async function handleClick() {
     if (isOpen) {
@@ -42,25 +67,34 @@ const ToolBar: React.FC<ToolBarProps> = ({
     setLoading(true);
     setError(null);
 
-    try {
-      const response = await fetch('http://localhost:3003/api/recomendacao-gastos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ salario, idade, filhos, metaEconomia }),
-      });
+    const formsData = await fetchUserFormsData();
+      if (formsData) {
+        const { media_salarial, idade, quantidade_filhos, dinheiro } = formsData;
 
-      if (!response.ok) {
-        throw new Error('Erro ao buscar recomendação');
+        const salario = media_salarial;
+        const filhos = quantidade_filhos;
+        const metaEconomia = dinheiro;
+
+        try {
+        const response = await fetch('http://localhost:3003/api/recomendacao-gastos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ salario, idade, filhos, metaEconomia }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Erro ao buscar recomendação');
+        }
+
+        const data = await response.json();
+        setRecomendacao(data.recomendacao);
+        setIsOpen(true);
+      } catch (err: any) {
+        setError(err.message || 'Erro desconhecido');
+        setIsOpen(false);
+      } finally {
+        setLoading(false);
       }
-
-      const data = await response.json();
-      setRecomendacao(data.recomendacao);
-      setIsOpen(true); // abre o card após receber a recomendação
-    } catch (err: any) {
-      setError(err.message || 'Erro desconhecido');
-      setIsOpen(false);
-    } finally {
-      setLoading(false);
     }
   }
 
