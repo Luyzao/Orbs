@@ -77,8 +77,6 @@ const CashFlowBox: React.FC<CashFlowBoxProps> = ({ selectedDate }) => {
         income: parseCurrencyToNumber(renda),
         extraincome: parseCurrencyToNumber(extraincome),
         otherincome: parseCurrencyToNumber(otherincome),
-        month: selectedDate,
-        date: selectedDate,
       }
       putIncome(Data)
     } else {
@@ -87,6 +85,8 @@ const CashFlowBox: React.FC<CashFlowBoxProps> = ({ selectedDate }) => {
         income: parseCurrencyToNumber(renda),
         extraincome: parseCurrencyToNumber(extraincome),
         otherincome: parseCurrencyToNumber(otherincome),
+        month: selectedDate,
+        date: selectedDate,
       }
       postIncome(Data)
     }
