@@ -173,7 +173,7 @@ const CashFlowBox: React.FC<CashFlowBoxProps> = ({ selectedDate }) => {
       const otherincome = Number(income.otherincome ?? 0)
       const impostoRenda = calcularImpostoRenda(extraincome + otherincome)
 
-      const total = extraincome + otherincome + impostoRenda
+      const total = extraincome + otherincome + renda
 
       setextraIncome(extraincome)
       setOthers(otherincome)
