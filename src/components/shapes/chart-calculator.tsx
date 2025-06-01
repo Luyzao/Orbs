@@ -214,7 +214,7 @@ const Chart: React.FC<ChartProps> = ({ receitas, despesas, selectedDate }) => {
   return (
     <div className="relative ml-4 mt-6 sm:ml-4 sm:mt-8 md:ml-8 md:mt-6 lg:ml-8 lg:mt-4 xl:ml-8 xl:mt-4">
       {/* Gráfico e análises */}
-      <div className="bg-[#EBEBEB] w-[255px] h-[545px] sm:w-[360px] sm:h-[545px] md:w-[440px] md:h-[668px] lg:w-[440px] lg:h-[698px] xl:w-[540px] xl-h[790px] flex flex-col items-start justify-start rounded-lg shadow-md p-4">
+      <div className="bg-[#EBEBEB] w-[255px] h-[545px] sm:w-[360px] sm:h-[545px] md:w-[440px] md:h-[668px] lg:w-[440px] lg:h-[698px] xl:w-[790px] xl:h-[725px] flex flex-col items-start justify-start rounded-lg shadow-md p-4">
         <h2 className="font-poppins text-xl sm:text-xl md:text-2xl lg:text-2xl xl:text-2xl text-start text-[#1C1B1F]">
           Saldo Mensal
         </h2>
@@ -223,7 +223,8 @@ const Chart: React.FC<ChartProps> = ({ receitas, despesas, selectedDate }) => {
         </p>
         <hr className="w-full border-t border-[#C0C0C0] mb-3" />
 
-        <div className="w-full">
+        <div className="w-full max-h-[500px] overflow-y-auto pb-4 custom-scrollbar">
+          <p className='text-[#000000] text-[20px] font-comfortaa font-bold'>O que a IA tem a dizer?</p>
           {carregando ? (
             <p className="font-comfortaa text-[#1C1B1F] text-sm">
               🔄 Carregando análise...
@@ -289,11 +290,12 @@ const Chart: React.FC<ChartProps> = ({ receitas, despesas, selectedDate }) => {
             </p>
           )}
         </div>
-        <h2 className="font-comfortaa text-xs sm:text-ms md:text-sm lg:text-base xl:text-base text-start text-[#383577] md:mt-2 lg:mt-1 xl:mt-1">
+
+        <h2 className="font-comfortaa text-xs sm:text-ms md:text-sm lg:text-base xl:text-base text-start text-[#383577] md:mt-2 lg:mt-1 xl:mt-4">
           Saldo ao longo do mês
         </h2>
 
-        <div className="w-full md:h-[350px] lg:h-[400px] xl:h-[720px] md:w-[350px] lg:w-[400px] xl:w-[720px] bg-[#EBEBEB] rounded-md flex items-center justify-center">
+        <div className="w-full md:h-[350px] lg:h-[400px] xl:h-[650px] md:w-[350px] lg:w-[400px] xl:w-[720px] bg-[#EBEBEB] rounded-md flex items-center justify-center">
           {chartData ? (
             <PrimeChart
               type="line"

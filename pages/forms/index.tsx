@@ -390,7 +390,7 @@ export default function Forms() {
               }
             }}
             disabled={!isAnswered}
-            className={`w-[120px] h-[32px] ${
+            className={`w-[150px] h-[40px] p-2 ${
               isAnswered ? 'bg-indigo-500' : 'bg-gray-400 cursor-not-allowed'
             } font-poppins text-[18px] rounded-lg flex items-center justify-center`}
           >
