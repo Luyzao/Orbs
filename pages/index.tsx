@@ -30,6 +30,15 @@ export default function Home() {
     })
   }
 
+  const showSuccess2 = () => {
+    toast.current.show({
+      severity: 'success',
+      summary: 'Sucesso',
+      detail: 'Cadastrado com sucesso',
+      life: 3000,
+    })
+  }
+
   const showError = () => {
     toast.current.show({
       severity: 'error',
@@ -69,7 +78,7 @@ export default function Home() {
         if (insertError) {
           console.error('Erro ao inserir usuário', insertError)
         } else {
-          alert('Cadastro com sucesso!')
+          showSuccess2()
         }
       }
     }

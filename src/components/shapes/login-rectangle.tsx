@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { InputText } from 'primereact/inputtext'
 import { supabase } from 'lib/supabaseClient'
-import { useRouter } from 'next/router'
 import Link from 'next/link'
-import Image from 'next/image'
 
 interface LoginRectangleProps {
   className?: string
@@ -12,10 +10,28 @@ interface LoginRectangleProps {
 const LoginRectangle: React.FC<LoginRectangleProps> = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const router = useRouter()
 
   const [emailError, setEmailError] = useState(false)
   const [passwordError, setPasswordError] = useState(false)
+  const toast = useRef<any>(null)
+  
+  const showSuccess = () => {
+    toast.current.show({
+      severity: 'success',
+      summary: 'Sucesso',
+      detail: 'Cadastrado com sucesso',
+      life: 3000,
+    })
+  }
+
+  const showLoginSucess = () => {
+    toast.current.show({
+      severity: 'success',
+      summary: 'Sucesso',
+      detail: 'Login bem-sucedido',
+      life: 3000,
+    })
+  }
 
   const validateForm = () => {
     const noWhiteSpace = (str: string) => str.trim() === str && str !== ''
@@ -56,7 +72,7 @@ const LoginRectangle: React.FC<LoginRectangleProps> = () => {
         if (error) {
           alert('Erro ao fazer login: ' + error.message)
         } else {
-          alert('Login realizado com sucesso!')
+          showLoginSucess()
           const {
             data: { user },
           } = await supabase.auth.getUser()
@@ -107,7 +123,7 @@ const LoginRectangle: React.FC<LoginRectangleProps> = () => {
         if (insertError) {
           console.error('Erro ao inserir usuário', insertError)
         } else {
-          alert('Cadastro com sucesso!')
+          showSuccess()
         }
       }
     }

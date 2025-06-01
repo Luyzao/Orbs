@@ -1,7 +1,7 @@
 import { RadioButton } from 'primereact/radiobutton'
 import { ProgressBar } from 'primereact/progressbar'
 import { InputText } from 'primereact/inputtext'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { supabase } from 'lib/supabaseClient'
 import { useRouter } from 'next/router'
 
@@ -46,6 +46,16 @@ export default function Forms() {
   const [idUser, setIdUser] = useState<any>()
   const router = useRouter()
   const currentQuestion = perguntas[currentIndex]
+  const toast = useRef<any>(null)
+
+  const showSuccess = () => {
+    toast.current.show({
+      severity: 'success',
+      summary: 'Sucesso',
+      detail: 'Cadastrado com sucesso',
+      life: 3000,
+    })
+  }
 
   const isAnswered = (() => {
     if (currentQuestion.id === 'filhos' && answers['filhos'] === '1') {
@@ -198,7 +208,7 @@ export default function Forms() {
         if (insertError) {
           console.error('Erro ao inserir usuário', insertError)
         } else {
-          alert('Cadastro com sucesso!')
+          showSuccess()
         }
       }
     }
@@ -219,9 +229,10 @@ export default function Forms() {
         <p className="font-comfortaa text-3xl px-6 text-[#D9D9D9] xl:px-8 xl:text-4xl">
           Orbs
         </p>
-        <p className="font-comfortaa text-[12px] px-6 text-[#D9D9D9] xl:px-8 xl:text-[14px]">
+        <p className="font-comfortaa text-xs px-6 text-[#D9D9D9] xl:px-8 xl:text-lg">
           Quase lá! Precisamos de mais alguns dados.
         </p>
+
         <div className="flex flex-row mr-4 align-items-center">
           {currentIndex > 0 && (
             <button
@@ -293,7 +304,7 @@ export default function Forms() {
                 .map((option) => (
                   <div
                     key={option.key}
-                    className="flex items-center font-comfortaa text-md mb-2"
+                    className="flex items-center font-comfortaa text-base mb-2 md:text-xl xl:text-2xl"
                   >
                     <RadioButton
                       inputId={option.key}

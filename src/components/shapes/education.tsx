@@ -17,45 +17,86 @@ interface CardData {
 const cards: CardData[] = [
   {
     image: '/images/image1.svg',
-    title: 'Receita, Despesa e Investimento',
-    description: 'Diferença entre receita, despesa e investimento.',
+    title: 'Fundamentos Básicos da Educação Financeira',
+    description: 'O que é Educação Financeira?',
     content:
-      'Receitas são entradas de dinheiro. Despesas são os gastos. Investimentos são aplicações com expectativa de retorno financeiro.Receitas são entradas de dinheiro. Despesas são os gastos.',
+    `<strong>Educação financeira</strong> é o processo de adquirir conhecimentos e desenvolver habilidades para administrar melhor o dinheiro no dia a dia.
+     Ela permite que você tome decisões <strong>conscientes</strong> sobre como ganhar, gastar, poupar, investir e proteger seus recursos.
+     Ter uma boa educação financeira não significa apenas economizar, mas sim entender como o dinheiro funciona, como ele impacta sua vida e como usá-lo para conquistar seus <strong>objetivos</strong>.
+     Com ela, você ganha <strong>autonomia, segurança e qualidade de vida</strong>, evitando dívidas desnecessárias e construindo um futuro mais tranquilo e próspero.
+    `,
   },
   {
     image: '/images/image2.svg',
-    title: 'Reserva de Emergência',
-    description: 'Importância da reserva de emergência.',
+    title: 'Entendendo Renda e Orçamento Básico (Regra 50, 30, 20)',
+    description: 'Renda e Orçamento Básico',
     content:
-      'A reserva de emergência é essencial para cobrir imprevistos, como problemas de saúde, sem comprometer suas finanças.',
+    `Organizar suas finanças começa por entender sua <strong>renda</strong> e como distribuir seus <strong>gastos</strong>. Uma das formas mais simples e eficazes é aplicar a <strong>Regra 50-30-20</strong>, que funciona assim:
+    • <strong>50% da renda</strong>: Necessidades — gastos essenciais como moradia, alimentação, transporte, saúde e contas básicas.
+    • <strong>30% da renda</strong>: Desejos — lazer, restaurantes, viagens, hobbies e outras coisas que trazem prazer.
+    • <strong>20% da renda</strong>: Prioridades financeiras — aqui entram a reserva de emergência, investimentos e pagamento de dívidas.
+    Esse método ajuda você a ter equilíbrio, viver bem no presente e ainda se planejar para o <strong>futuro</strong>, sem que o dinheiro se torne um peso na sua vida.`,
   },
   {
     image: '/images/image3.svg',
-    title: 'Juros Simples vs. Compostos',
-    description: 'Juros simples vs. compostos, como funciona?',
+    title: 'Reserva de Emergência: Sua Segurança Financeira',
+    description: 'Importância da Reserva de Emergência',
     content:
-      'Juros simples são calculados sobre o valor inicial. Juros compostos rendem sobre o valor acumulado, acelerando os ganhos.',
+      `A <strong>reserva de emergência</strong> é um valor guardado para imprevistos, como perda de emprego, problemas de saúde, consertos urgentes ou qualquer situação <strong>inesperada</strong>.
+      • <strong>Quanto guardar?</strong>
+      O ideal é acumular de 3 a 6 meses dos seus custos fixos. Se você tem um trabalho informal ou instável, pode ser interessante guardar até 12 meses.
+      • <strong>Onde deixar?</strong>
+      Deve estar em investimentos de <strong>alta liquidez</strong> (fácil acesso) e <strong>baixo risco</strong>, como contas remuneradas, Tesouro Selic ou CDBs de liquidez diária.
+      Ter uma reserva de emergência traz segurança e <strong>evita</strong> que você precise recorrer a <strong>empréstimos, cartões de crédito ou cheque especial</strong> em momentos difíceis.`,
   },
   {
     image: '/images/image4.svg',
-    title: 'Tipos de Investimento',
-    description: 'O que são CDB, Tesouro Direto, Fundos, Ações?',
+    title: 'Dívidas, Juros e Inflação: Entenda e Proteja seu Dinheiro',
+    description: 'Dívidas, Juros e Inflação',
     content:
-      'Cada tipo tem riscos e retornos diferentes. CDB e Tesouro são mais seguros. Fundos e ações podem ter mais volatilidade.',
-  },
-  {
-    image: '/images/image5.svg',
-    title: 'Gastos Supérfluos',
-    description: 'Como cortar gastos supérfluos?',
-    content:
-      'Identifique gastos não essenciais e reduza ou elimine. Substitua hábitos caros por alternativas econômicas.',
+      `• <strong>Dívidas</strong>
+      Ter dívidas não é, necessariamente, um problema — desde que sejam planejadas e caibam no orçamento. O problema começa quando elas se acumulam e os juros viram uma <strong>bola de neve</strong>.
+      • <strong>Juros</strong>
+      Juros são o custo do dinheiro emprestado. No Brasil, eles costumam ser altos, especialmente em cartões de crédito e cheque especial. Pagar o mínimo da fatura ou atrasar boletos pode gerar dívidas que crescem <strong>rapidamente</strong>.
+      • <strong>Inflação</strong>
+      A inflação é o aumento geral dos preços. Ela diminui o poder de compra do seu dinheiro ao longo do tempo. Por isso, deixar dinheiro parado na conta corrente significa perder <strong>valor</strong>.
+      • <strong>Soluções</strong>
+       - Organize as dívidas, priorizando as mais <strong>caras</strong> (maiores juros).
+       - Negocie prazos e taxas.
+       - Proteja-se da inflação <strong>investindo</strong> seu dinheiro.`,
   },
   {
     image: '/images/image6.svg',
-    title: 'Planejamento de Compras',
-    description: 'Como se planejar para grandes compras?',
+    title: 'Começando a Investir: Simples e Acessível',
+    description: 'Começando a Investir',
     content:
-      'Defina metas, pesquise preços e guarde um valor por mês até atingir o necessário para a compra sem dívidas.',
+      `Investir não é só para quem tem muito dinheiro — é para <strong>qualquer pessoa</strong> que quer fazer seu dinheiro trabalhar por ela.
+      • <strong>Passos para começar</strong>:
+      - <strong>Quite</strong> dívidas caras e tenha uma reserva de emergência.
+      - <strong>Defina</strong> seus objetivos: curto, médio e longo prazo.
+      - <strong>Conheça</strong> os tipos de investimentos:
+      - <strong>Renda fixa</strong>: seguros e indicados para quem está começando <strong>(Tesouro Direto, CDB, LCI, LCA)</strong>.
+      - <strong>Renda variável</strong>: ações, fundos imobiliários e outros, que podem gerar mais retorno, mas com mais risco.
+      • <strong>Importante</strong>:
+      Comece aos <strong>poucos</strong>, estudando, diversificando e, principalmente, investindo com consciência. <strong>Não existe milagre</strong>: constância e disciplina fazem toda a diferença.
+      `,
+  },
+  {
+    image: '/images/image5.svg',
+    title: 'Como Cortar Gastos Supérfluos e Se Planejar para Grandes Compras',
+    description: 'Planejamento de Compras',
+    content:
+      `• <strong>Cortar gastos supérfluos</strong>:
+      <strong>- Anote</strong> todos os seus gastos e identifique aqueles que não são essenciais.
+      <strong>- Reveja</strong> assinaturas que você não usa (streaming, academia, serviços).
+      <strong>- Evite</strong> compras por impulso. Dê um prazo de 24 a 48 horas antes de decidir.
+      <strong>- Adote</strong> hábitos que economizam: cozinhar mais em casa, comparar preços, pesquisar promoções.
+      • <strong>Planejamento para grandes compras (casa, carro, viagem)</strong>:
+      <strong>- Defina</strong> o valor e o prazo para juntar o dinheiro.
+      <strong>- Crie</strong> uma poupança exclusiva ou invista para esse objetivo.
+      <strong>- Calcule</strong> quanto precisa guardar por mês até a data desejada.
+      <strong>- Avalie</strong> se vale mais a pena comprar à vista (com desconto) ou financiar, considerando os juros.
+      Ter disciplina para cortar pequenos gastos hoje permite realizar grandes sonhos amanhã, sem se endividar.`,
   },
 ]
 
@@ -175,7 +216,14 @@ function ExpandedCard({ card, onBack }: ExpandedCardProps) {
 
         <h3 className="font-bold text-xl mt-4 text-[#3E3E3E]">{card.title}</h3>
 
-        <p className="text-base mt-2 text-[#3E3E3E]">{card.content}</p>
+        {card.content.split('\n').map((line, index) => (
+          <p
+            key={index}
+            className="text-base mt-2 text-[#3E3E3E]"
+            dangerouslySetInnerHTML={{ __html: line.trim() }}
+          />
+        ))}
+
       </div>
     </div>
   )
