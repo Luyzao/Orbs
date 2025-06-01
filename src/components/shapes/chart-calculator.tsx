@@ -15,31 +15,40 @@ const Chart: React.FC<ChartProps> = ({ className }) => {
 
   useEffect(() => {
     const executarAnaliseCompleta = async () => {
-      setCarregando(true);
-      setErro('');
+        setCarregando(true);
+        setErro('');
 
-      try {
+        try {
+        console.log('🚀 Iniciando análise financeira...');
+
         // 🔸 1. Obter usuário
         const {
-          data: { user },
-          error: userError,
+            data: { user },
+            error: userError,
         } = await supabase.auth.getUser();
 
+        console.log('👤 Dados do usuário retornados:', user);
+        if (userError) console.error('❌ Erro ao obter usuário:', userError);
+
         if (userError || !user) {
-          throw new Error('Erro ao obter usuário');
+            throw new Error('Erro ao obter usuário');
         }
 
         const userId = user.id;
+        console.log('✅ UserID:', userId);
 
         // 🔸 2. Buscar dados do Forms
         const { data: formsData, error: formsError } = await supabase
-          .from('Forms')
-          .select('media_salarial, idade, quantidade_filhos, dinheiro')
-          .eq('userId', userId)
-          .single();
+            .from('Forms')
+            .select('media_salarial, idade, quantidade_filhos, dinheiro')
+            .eq('userId', userId)
+            .single();
+
+        console.log('📄 Dados do Forms retornados:', formsData);
+        if (formsError) console.error('❌ Erro no Forms:', formsError);
 
         if (formsError || !formsData) {
-          throw new Error('Erro ao buscar dados do Forms');
+            throw new Error('Erro ao buscar dados do Forms');
         }
 
         const { media_salarial, idade, quantidade_filhos, dinheiro } = formsData;
@@ -47,20 +56,37 @@ const Chart: React.FC<ChartProps> = ({ className }) => {
         const filhos = quantidade_filhos;
         const metaEconomia = dinheiro;
 
+        console.log('💰 Dados financeiros:', {
+            salario,
+            idade,
+            filhos,
+            metaEconomia,
+        });
+
         // 🔸 3. Buscar resumo financeiro (gastos)
+        console.log('📤 Enviando requisição para resumo financeiro...');
         const resumoResponse = await fetch('http://localhost:3390/api/resume', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId }),
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId }),
         });
 
         const resumoData = await resumoResponse.json();
 
+        console.log('📥 Resposta bruta do resumo financeiro:', resumoData);
+
         if (!resumoResponse.ok) {
-          throw new Error('Erro ao buscar resumo financeiro');
+            console.error('❌ Erro na resposta do resumo financeiro:', resumoResponse.status);
+            throw new Error('Erro ao buscar resumo financeiro');
         }
 
-        const gastos = resumoData.data;
+        const gastos = resumoData?.data;
+
+        if (!gastos || Object.keys(gastos).length === 0) {
+            console.warn('⚠️ Gastos estão vazios ou indefinidos:', gastos);
+        } else {
+            console.log('💸 Gastos retornados:', gastos);
+        }
 
         console.log('🔍 Dados enviados para análise:', {
             salario,
@@ -71,34 +97,39 @@ const Chart: React.FC<ChartProps> = ({ className }) => {
         });
 
         // 🔸 4. Enviar para a análise
+        console.log('📤 Enviando dados para análise...');
         const analiseResponse = await fetch('http://localhost:3003/api/analise-gastos', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
             salario,
             idade,
             filhos,
             metaEconomia,
             gastos,
-          }),
+            }),
         });
 
         const analiseData = await analiseResponse.json();
 
+        console.log('📥 Resposta da análise:', analiseData);
+
         if (!analiseResponse.ok) {
-          throw new Error(analiseData?.erro || 'Erro ao gerar análise');
+            console.error('❌ Erro na análise:', analiseData?.erro);
+            throw new Error(analiseData?.erro || 'Erro ao gerar análise');
         }
 
-        console.log('Análise gerada:', analiseData);
+        console.log('✅ Análise gerada com sucesso:', analiseData);
 
         setAnalise(analiseData.analise); // 🔥 Guarda a análise no estado
 
-      } catch (error: any) {
-        console.error('Erro:', error);
+        } catch (error: any) {
+        console.error('❌ Erro geral:', error);
         setErro(error.message);
-      } finally {
+        } finally {
         setCarregando(false);
-      }
+        console.log('🏁 Processo de análise encerrado');
+        }
     };
 
     executarAnaliseCompleta();
