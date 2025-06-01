@@ -1,66 +1,70 @@
-// pages/index.tsx
-// DEPENDENCIAS -> npx shadcn@latest add progress | npm install recharts | npm install @heroicons/react
+'use client'
+
+import { useContext, useEffect, useState } from 'react'
 import { ListaDeMetas } from '@/components/ListaDeMetas'
 import { CircleDollarSign } from 'lucide-react'
 import Image from 'next/image'
 import { GraficoAnaliseMetas } from '@/components/GraficoAnaliseMetas'
 import { BarraDeProgresso } from '@/components/BarraDeProgresso'
-import { useContext, useState } from 'react'
-import { ThemeContext } from '@/context/ThemeContext'
 import { ModalNovaMeta } from '@/components/ModalNovaMeta'
+import { ThemeContext } from '@/context/ThemeContext'
+import { getGoalsByUser, deleteGoal } from '@/services/goals'
+import { supabase } from '../../lib/supabaseClient'
+import { getCategory } from '@/services/category'
+import ToolBar from '@/components/toolBar'
 
 export default function Home() {
   const { toggleTheme } = useContext(ThemeContext)
   const [modalAberto, setModalAberto] = useState(false)
+  const [metas, setMetas] = useState<any[]>([])
+  const [metaSelecionada, setMetaSelecionada] = useState<any | null>(null)
+  const [contadorAtualizacao, setContadorAtualizacao] = useState(0)
+
+  const buscarMetas = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!user) return
+
+    const [goals, categoriasResponse] = await Promise.all([
+      getGoalsByUser(user.id),
+      getCategory(),
+    ])
+
+    const categorias = categoriasResponse.data
+
+    const metasComCategoria = goals.map((goal: any) => {
+      const categoria = categorias.find((cat: any) => cat.id === goal.categoryId)
+      return {
+        ...goal,
+        category: {
+          name: categoria?.name || 'Desconhecida',
+          color: categoria?.color || '#B191F5',
+        },
+      }
+    })
+
+    setMetas(metasComCategoria)
+  }
+
+
+  const atualizarTudo = async () => {
+    await buscarMetas()
+    setContadorAtualizacao((prev) => prev + 1)
+  }
+
+  useEffect(() => {
+    buscarMetas()
+  }, [])
 
   return (
     <div className="flex w-full">
       {/* Conteúdo principal */}
       <main className="flex-1 p-5 bg-gray-100 dark:bg-gray-900 min-h-screen">
-        {/* Cabeçalho */}
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
-            Qual orbita
-            <span style={{ color: '#383577' }}> você deseja </span>
-            <span className="text-gray-800 dark:text-white">conhecer?</span>
-            <br />
-            <span className="text-2xl font-bold mb-10 text-gray-800 dark:text-white">
-              Defina suas metas...
-            </span>
-          </h1>
-
-          <div className="flex items-center gap-2">
-            <div className="bg-gray-300 dark:bg-gray-700 shadow px-3 py-2 flex items-center gap-2 text-sm flex-shrink-0">
-              <span className="font-bold text-gray-800 dark:text-white">
-                Recomendação de gasto: R$ 300,00
-              </span>
-              <CircleDollarSign
-                size={26}
-                className="text-gray-800 dark:text-white"
-              />
-            </div>
-            <button
-              onClick={() => {
-                console.log('Cliquei no botão!')
-                toggleTheme() // se quiser já ativar aqui
-              }}
-              className="flex items-center justify-center bg-gray-300 dark:bg-gray-700 shadow px-2 py-2 text-sm text-gray-800 hover:text-black"
-            >
-              <i className="pi pi-moon text-lg"></i>
-            </button>
-
-            <Image
-              src="/images/avatar.jpg"
-              alt="Avatar"
-              width={36}
-              height={36}
-              className="rounded-full object-cover"
-            />
-          </div>
-        </div>
+        <ToolBar selectedDate={undefined} setSelectedDate={undefined} />
 
         {/* Linha divisória */}
-        <hr className="border-t border-gray-400 dark:border-gray-600 -mx-5" />
+        <hr className="border-t border-gray-400 dark:border-gray-600 -mx-5 mt-4" />
 
         {/* Seção de metas */}
         <section className="mt-4">
@@ -72,17 +76,36 @@ export default function Home() {
               Metas
             </h2>
             <button
-              onClick={() => setModalAberto(true)}
-              className="flex items-center gap-2 bg-gray-300 dark:bg-gray-700 shadow px-4 py-2 rounded-full text-sm font-medium text-gray-800 dark:text-white hover:bg-gray-400 dark:hover:bg-gray-600 transition"
+              onClick={() => {
+                setMetaSelecionada(null)
+                setModalAberto(true)
+              }}
+              className="mr-8 flex items-center gap-2 bg-gray-300 dark:bg-gray-700 shadow px-4 py-2 rounded-full text-sm font-medium text-gray-800 dark:text-white hover:bg-gray-400 dark:hover:bg-gray-600 transition"
             >
               + Nova meta
             </button>
           </div>
 
-          <ListaDeMetas onEdit={() => setModalAberto(true)} />
+          <ListaDeMetas
+            metas={metas}
+            onEditMeta={(meta) => {
+              setMetaSelecionada(meta)
+              setModalAberto(true)
+            }}
+            onDeleteMeta={async (id) => {
+              await deleteGoal(id)
+              atualizarTudo()
+            }}
+          />
+
           <ModalNovaMeta
             isOpen={modalAberto}
-            onClose={() => setModalAberto(false)}
+            onClose={() => {
+              setModalAberto(false)
+              setMetaSelecionada(null)
+              atualizarTudo()
+            }}
+            metaSelecionada={metaSelecionada}
           />
         </section>
 
@@ -91,8 +114,8 @@ export default function Home() {
           style={{ marginLeft: '55px' }}
           className="grid grid-cols-1 md:grid-cols-2 mt-4 gap-4"
         >
-          <GraficoAnaliseMetas />
-          <BarraDeProgresso />
+          <GraficoAnaliseMetas atualizar={contadorAtualizacao} />
+          <BarraDeProgresso atualizar={contadorAtualizacao} />
         </div>
       </main>
     </div>
