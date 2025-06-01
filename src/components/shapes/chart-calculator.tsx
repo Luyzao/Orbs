@@ -122,8 +122,102 @@ const Chart: React.FC<ChartProps> = ({ receitas, despesas, selectedDate }) => {
     }
   }, [backendData]);
 
+  const [analise, setAnalise] = useState<string>(''); // 🔥 Resultado da análise
+  const [carregando, setCarregando] = useState<boolean>(true);
+  const [erro, setErro] = useState<string>('');
+
+  useEffect(() => {
+    const executarAnaliseCompleta = async () => {
+      setCarregando(true);
+      setErro('');
+
+      try {
+        // 🔸 1. Obter usuário
+        const {
+          data: { user },
+          error: userError,
+        } = await supabase.auth.getUser();
+
+        if (userError || !user) {
+          throw new Error('Erro ao obter usuário');
+        }
+
+        const userId = user.id;
+
+        // 🔸 2. Buscar dados do Forms
+        const { data: formsData, error: formsError } = await supabase
+          .from('Forms')
+          .select('media_salarial, idade, quantidade_filhos, dinheiro')
+          .eq('userId', userId)
+          .single();
+
+        if (formsError || !formsData) {
+          throw new Error('Erro ao buscar dados do Forms');
+        }
+
+        const { media_salarial, idade, quantidade_filhos, dinheiro } = formsData;
+        const salario = media_salarial;
+        const filhos = quantidade_filhos;
+        const metaEconomia = dinheiro;
+
+        // 🔸 3. Buscar resumo financeiro (gastos)
+        const resumoResponse = await fetch('http://localhost:3390/api/resume', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId }),
+        });
+
+        const resumoData = await resumoResponse.json();
+
+        if (!resumoResponse.ok) {
+          throw new Error('Erro ao buscar resumo financeiro');
+        }
+
+        const gastos = resumoData.data;
+
+        console.log('🔍 Dados enviados para análise:', {
+            salario,
+            idade,
+            filhos,
+            metaEconomia,
+            gastos,
+        });
+
+        // 🔸 4. Enviar para a análise
+        const analiseResponse = await fetch('http://localhost:3003/api/analise-gastos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            salario,
+            idade,
+            filhos,
+            metaEconomia,
+            gastos,
+          }),
+        });
+
+        const analiseData = await analiseResponse.json();
+
+        if (!analiseResponse.ok) {
+          throw new Error(analiseData?.erro || 'Erro ao gerar análise');
+        }
+
+        console.log('Análise gerada:', analiseData);
+
+        setAnalise(analiseData.analise); // 🔥 Guarda a análise no estado
+
+      } catch (error: any) {
+        console.error('Erro:', error);
+        setErro(error.message);
+      } finally {
+        setCarregando(false);
+      }
+    };
+
+    executarAnaliseCompleta();
+    }, []);
+
     return (
-    
         <div className="relative ml-4 mt-6 sm:ml-4 sm:mt-8 md:ml-8 md:mt-6 lg:ml-8 lg:mt-4 xl:ml-8 xl:mt-4">
         {/* Gráfico e análises */}
         <div className="bg-[#EBEBEB] w-[255px] h-[545px] sm:w-[360px] sm:h-[545px] md:w-[440px] md:h-[668px] lg:w-[440px] lg:h-[698px] xl:w-[540px] xl-h[790px] flex flex-col items-start justify-start rounded-lg shadow-md p-4">
@@ -135,18 +229,72 @@ const Chart: React.FC<ChartProps> = ({ receitas, despesas, selectedDate }) => {
             </p>
             <hr className="w-full border-t border-[#C0C0C0] mb-3" />
 
-            <p className="flex items-start gap-2 font-comfortaa text-[#1C1B1F] text-xs sm:text-xs md:text-base lg:text-base xl:text-base mb-3">
-                <HiExclamationCircle className="text-5xl md:text-4xl lg:text-4xl xl:text-4xl mt-[1px]" />
-                Alerta: Mais de 60% dos seus gastos estão indo para beleza. Considere diminuir seus gastos.
-            </p>
-            <p className="flex items-start gap-2 font-comfortaa text-[#1C1B1F] text-xs sm:text-xs md:text-base lg:text-base xl:text-base mb-3">
-                <HiExclamationCircle className="text-5xl md:text-4xl lg:text-4xl xl:text-4xl  mt-[1px]" />
-                Alerta: Mais de 30% dos seus gastos estão indo para dívidas. Considere renegociar ou reduzir as parcelas.
-            </p>
-            <p className="flex items-start gap-2 font-comfortaa text-[#1C1B1F] text-xs sm:text-xs md:text-base lg:text-base xl:text-base mb-3">
-                <HiExclamationCircle className="text-5xl md:text-4xl lg:text-4xl xl:text-4xl mt-[1px]" />
-                Alerta: Mais de 50% dos seus gastos estão indo para comida. Considere reduzir suas saídas.           
-            </p>
+            <div className="w-full">
+                    {carregando ? (
+                        <p className="font-comfortaa text-[#1C1B1F] text-sm">
+                            🔄 Carregando análise...
+                        </p>
+                    ) : erro ? (
+                        <p className="font-comfortaa text-red-600 text-sm">
+                            ❌ Erro: {erro}
+                        </p>
+                    ) : analise ? (
+                        <div className="space-y-4">
+                            {analise
+                                .split('\n')
+                                .filter((linha) => linha.trim() !== '')
+                                .map((linha, index) => {
+                                    const isTitulo =
+                                        linha.endsWith(':') ||
+                                        linha.endsWith(' :') ||
+                                        /^[A-ZÀ-Ú\s]+:$/.test(linha.trim());
+
+                                    const isItem =
+                                        linha.trim().startsWith('-') ||
+                                        linha.trim().startsWith('•') ||
+                                        linha.trim().startsWith('→') ||
+                                        /^\d+\./.test(linha.trim());
+
+                                    if (isTitulo) {
+                                        return (
+                                            <h3
+                                                key={index}
+                                                className="flex items-start gap-2 font-comfortaa text-[#1C1B1F] text-base md:text-lg font-semibold"
+                                            >
+                                                <HiExclamationCircle className="text-xl md:text-2xl mt-1 text-[#F97316]" />
+                                                {linha.replace(':', '').trim()}
+                                            </h3>
+                                        );
+                                    }
+
+                                    if (isItem) {
+                                        return (
+                                            <li
+                                                key={index}
+                                                className="ml-8 list-disc font-comfortaa text-[#1C1B1F] text-sm md:text-base"
+                                            >
+                                                {linha.replace(/^[-•→\d.]+\s*/, '').trim()}
+                                            </li>
+                                        );
+                                    }
+
+                                    return (
+                                        <p
+                                            key={index}
+                                            className="flex items-start gap-2 font-comfortaa text-[#1C1B1F] text-sm md:text-base"
+                                        >
+                                            <HiExclamationCircle className="text-xl md:text-2xl mt-1 text-[#F97316]" />
+                                            {linha.trim()}
+                                        </p>
+                                    );
+                                })}
+                        </div>
+                    ) : (
+                        <p className="font-comfortaa text-[#1C1B1F] text-sm">
+                            Nenhuma análise disponível.
+                        </p>
+                    )}
+                </div>
             <h2 className="font-comfortaa text-xs sm:text-ms md:text-sm lg:text-base xl:text-base text-start text-[#383577] md:mt-2 lg:mt-1 xl:mt-1">
                 Saldo ao longo do mês
             </h2>
@@ -234,10 +382,9 @@ const Chart: React.FC<ChartProps> = ({ receitas, despesas, selectedDate }) => {
                 <p className="text-gray-500 text-sm">Carregando gráfico...</p>
                 )}
             </div>
-
+            </div>
         </div>
-    
-      </div>
     );
-  };  
+};
+
 export default Chart;

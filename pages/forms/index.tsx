@@ -1,8 +1,9 @@
 import { RadioButton } from 'primereact/radiobutton';
 import { ProgressBar } from 'primereact/progressbar';
 import { InputText } from 'primereact/inputtext'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from 'lib/supabaseClient'
+import { useRouter } from 'next/router'
 
 const perguntas = [
     {
@@ -39,10 +40,11 @@ const perguntas = [
     },
 ];
 
-
 export default function Forms() {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [answers, setAnswers] = useState<{ [key: string]: string }>({});
+    const [idUser, setIdUser] = useState<any>()
+    const router = useRouter()
     const currentQuestion = perguntas[currentIndex];
 
     const isAnswered = (() => {
@@ -158,6 +160,7 @@ export default function Forms() {
 
             if (response.ok) {
                 console.log("Formulário enviado com sucesso:", data);
+                router.push('/')
             } else {
                 console.error("Erro ao enviar:", data.message);
             }
@@ -165,6 +168,45 @@ export default function Forms() {
             console.error("Erro na requisição:", error);
         }
     };
+
+    useEffect(() => {
+        async function checkAndInsertUser() {
+          const {
+            data: { user },
+          } = await supabase.auth.getUser()
+          if (user) setIdUser(user.id)
+    
+          if (!user) return
+    
+          // Verifica se já existe na tabela User
+          const { data: existingUser, error } = await supabase
+            .from('User')
+            .select('*')
+            .eq('id', user.id)
+            .single()
+    
+          if (error && error.code !== 'PGRST116') {
+            console.error('Erro ao buscar usuário', error)
+            return
+          }
+    
+          if (!existingUser) {
+            const { error: insertError } = await supabase.from('User').insert({
+              id: user.id,
+              name: user.user_metadata.full_name || 'Usuário Google',
+            })
+    
+            if (insertError) {
+              console.error('Erro ao inserir usuário', insertError)
+            } else {
+              console.log('Usuário inserido na tabela User')
+              alert('Cadastro com sucesso!')
+            }
+          }
+        }
+    
+        checkAndInsertUser()
+      }, [])
 
     return (
         <div

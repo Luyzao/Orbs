@@ -7,6 +7,7 @@ import { RxExit } from 'react-icons/rx'
 import { GiMoonOrbit } from 'react-icons/gi'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
+import { FaWpforms } from 'react-icons/fa6'
 
 export default function SideBar() {
   const [itemSelecionado, setItemSelecionado] = useState('Dashboard')
@@ -24,6 +25,7 @@ export default function SideBar() {
       icone: <MdOutlineCalculate size={25} />,
       path: '/calculator',
     },
+    { nome: 'Formulário', icone: <FaWpforms size={25} />, path: '/forms' },
   ]
 
   const handleLogout = () => {

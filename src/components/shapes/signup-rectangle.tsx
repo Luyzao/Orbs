@@ -79,19 +79,6 @@ const SignUpRectangle: React.FC<SignUpRectangleProps> = () => {
     }
   }
 
-  const handleGoogleSignup = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/auth/login`,
-      },
-    })
-
-    if (error) {
-      console.error('Erro ao cadastrar com Google:', error)
-    }
-  }
-
   return (
     <section>
       <div
@@ -205,28 +192,6 @@ const SignUpRectangle: React.FC<SignUpRectangleProps> = () => {
           Criar conta
         </button>
 
-        <div className="flex items-center w-[155px] mt-3 sm:w-[190px] lg:w-[280px] xl:mt-4 xl:w-[330px] 2xl:w-[460px]">
-          <div className="flex-grow h-px bg-[#BFBEBE]" />
-          <span className="mx-1 text-[#000000] font-poppins text-[11.5px] sm:text-[13px] xl:text-[14px]">
-            Ou, cadastre-se com
-          </span>
-          <div className="flex-grow h-px bg-[#BFBEBE]" />
-        </div>
-
-        <button
-          onClick={handleGoogleSignup}
-          className="w-[130px] h-[30px] bg-[#D9D9D9] text-black font-poppins text-[12px] py-1 mt-3 border rounded-md flex items-center justify-center gap-2.5
-        sm:w-[150px] sm:h-[32px] sm:text-[13px] xl:w-[170px] xl:h-[34px] xl:text-[14px]"
-        >
-          <Image
-            width={1}
-            height={1}
-            className="w-[16px] h-auto xl:w-[18px]"
-            src="/images/google-icon.png"
-            alt="Google"
-          />
-          Google
-        </button>
       </div>
     </section>
   )
