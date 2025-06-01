@@ -14,7 +14,6 @@ export interface Meta {
   }
 }
 
-
 interface ListaDeMetasProps {
   onEditMeta: (meta: Meta) => void
   onDeleteMeta: (id: string) => void
@@ -35,7 +34,7 @@ export function ListaDeMetas({
 
   const handleNext = () => {
     setStartIndex((prev) =>
-      Math.min(prev + 1, Math.max(0, metas.length - cardsPerPage))
+      Math.min(prev + 1, Math.max(0, metas.length - cardsPerPage)),
     )
   }
 
@@ -43,18 +42,18 @@ export function ListaDeMetas({
 
   return (
     <div className="flex items-center gap-2">
-      <div className="w-10 relative left-2">
+      <div className="w-full relative left-2">
         {startIndex > 0 && (
           <button
             onClick={handlePrev}
-            className="p-2 bg-gray-400 rounded-full hover:bg-gray-600 text-white"
+            className="p-2 mr-5 bg-gray-400 rounded-full hover:bg-gray-600 text-white"
           >
             <ChevronLeft size={24} />
           </button>
         )}
       </div>
 
-      <div className="flex gap-3 overflow-visible">
+      <div className="flex items-center gap-3 overflow-visible">
         {visibleMetas.map((meta, index) => (
           <CardMeta
             key={index}
@@ -73,7 +72,7 @@ export function ListaDeMetas({
         {startIndex + cardsPerPage < metas.length && (
           <button
             onClick={handleNext}
-            className="p-2 bg-gray-400 rounded-full hover:bg-gray-600 text-white"
+            className="p-2 ml-4 bg-gray-400 rounded-full hover:bg-gray-600 text-white"
           >
             <ChevronRight size={24} />
           </button>

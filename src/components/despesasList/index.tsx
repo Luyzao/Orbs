@@ -372,7 +372,13 @@ export default function DespesasList({ onSuccess, selectedDate }: Props) {
         </div>
 
         {/* Lista de Despesas agrupada */}
-        <div className="md:h-[370px] h-[220px] overflow-y-auto">
+        <div
+          className="md:h-[370px] h-[220px] overflow-y-auto"
+          style={{
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+          }}
+        >
           {Object.entries(despesasAgrupadas).map(([data, despesas]) => (
             <div key={data}>
               <h3 className="font-bold text-lg mt-4">{data}</h3>

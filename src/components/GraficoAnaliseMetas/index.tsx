@@ -29,7 +29,8 @@ export function GraficoAnaliseMetas({ atualizar }: GraficoAnaliseMetasProps) {
 
       const metas = await getGoalsByUser(user.id)
 
-      const porMes: { [mesIndex: number]: { saldo: number; ideal: number } } = {}
+      const porMes: { [mesIndex: number]: { saldo: number; ideal: number } } =
+        {}
 
       metas.forEach((meta: any) => {
         const dataCriacao = new Date(meta.createdAt)
@@ -44,8 +45,18 @@ export function GraficoAnaliseMetas({ atualizar }: GraficoAnaliseMetasProps) {
       })
 
       const mesesOrdem = [
-        'jan', 'fev', 'mar', 'abr', 'mai', 'jun',
-        'jul', 'ago', 'set', 'out', 'nov', 'dez',
+        'jan',
+        'fev',
+        'mar',
+        'abr',
+        'mai',
+        'jun',
+        'jul',
+        'ago',
+        'set',
+        'out',
+        'nov',
+        'dez',
       ]
 
       const dataFormatada = mesesOrdem.map((mes, i) => ({
@@ -61,15 +72,13 @@ export function GraficoAnaliseMetas({ atualizar }: GraficoAnaliseMetasProps) {
   }, [atualizar]) // escuta a prop
 
   return (
-    <div className="w-full max-w-[700px] h-80 p-4 bg-white rounded-2xl shadow">
-      <h2 className="text-xl font-semibold text-gray-700 mb-4">
-        Análise de metas
-      </h2>
+    <div className="w-full max-w-[700px] h-18rem ">
+      <h2 className="text-xl font-semibold text-gray-700 ">Análise de metas</h2>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="mes" />
-          <YAxis tickFormatter={(value) => `R$${value}`} />
+          <YAxis className="text-xs" tickFormatter={(value) => `R$${value}`} />
           <Tooltip formatter={(value) => `R$ ${value}`} />
           <Line
             type="monotone"

@@ -1,18 +1,16 @@
 'use client'
 
-import { useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ListaDeMetas } from '@/components/ListaDeMetas'
 import { GraficoAnaliseMetas } from '@/components/GraficoAnaliseMetas'
 import { BarraDeProgresso } from '@/components/BarraDeProgresso'
 import { ModalNovaMeta } from '@/components/ModalNovaMeta'
-import { ThemeContext } from '@/context/ThemeContext'
 import { getGoalsByUser, deleteGoal } from '@/services/goals'
 import { supabase } from '../../lib/supabaseClient'
 import { getCategory } from '@/services/category'
 import ToolBar from '@/components/toolBar'
 
 export default function Home() {
-  const { toggleTheme } = useContext(ThemeContext)
   const [modalAberto, setModalAberto] = useState(false)
   const [metas, setMetas] = useState<any[]>([])
   const [metaSelecionada, setMetaSelecionada] = useState<any | null>(null)
@@ -32,7 +30,9 @@ export default function Home() {
     const categorias = categoriasResponse.data
 
     const metasComCategoria = goals.map((goal: any) => {
-      const categoria = categorias.find((cat: any) => cat.id === goal.categoryId)
+      const categoria = categorias.find(
+        (cat: any) => cat.id === goal.categoryId,
+      )
       return {
         ...goal,
         category: {
@@ -44,7 +44,6 @@ export default function Home() {
 
     setMetas(metasComCategoria)
   }
-
 
   const atualizarTudo = async () => {
     await buscarMetas()
@@ -66,11 +65,8 @@ export default function Home() {
 
         {/* Seção de metas */}
         <section className="mt-4">
-          <div className="flex items-center justify-between px-14 mb-2">
-            <h2
-              style={{ marginLeft: '60px' }}
-              className="mb-2 text-2xl font-bold text-gray-800 dark:text-white"
-            >
+          <div className="flex items-center w-9 justify-between px-14 mb-2">
+            <h2 className="mb-2 text-2xl font-bold text-gray-800 dark:text-white">
               Metas
             </h2>
             <button
@@ -78,24 +74,24 @@ export default function Home() {
                 setMetaSelecionada(null)
                 setModalAberto(true)
               }}
-              className="mr-8 flex items-center gap-2 bg-gray-300 dark:bg-gray-700 shadow px-4 py-2 rounded-full text-sm font-medium text-gray-800 dark:text-white hover:bg-gray-400 dark:hover:bg-gray-600 transition"
+              className=" flex items-center gap-2 bg-gray-300 dark:bg-gray-700  px-4 py-2 rounded-full text-sm font-medium text-gray-800 dark:text-white hover:bg-gray-400 dark:hover:bg-gray-600 transition"
             >
               + Nova meta
             </button>
           </div>
-
-          <ListaDeMetas
-            metas={metas}
-            onEditMeta={(meta) => {
-              setMetaSelecionada(meta)
-              setModalAberto(true)
-            }}
-            onDeleteMeta={async (id) => {
-              await deleteGoal(id)
-              atualizarTudo()
-            }}
-          />
-
+          <div className="bg-gray-200 w-9 flex p-2 border-round-2xl">
+            <ListaDeMetas
+              metas={metas}
+              onEditMeta={(meta) => {
+                setMetaSelecionada(meta)
+                setModalAberto(true)
+              }}
+              onDeleteMeta={async (id) => {
+                await deleteGoal(id)
+                atualizarTudo()
+              }}
+            />
+          </div>
           <ModalNovaMeta
             isOpen={modalAberto}
             onClose={() => {
@@ -108,12 +104,19 @@ export default function Home() {
         </section>
 
         {/* Seção de Gráfico e BarraProgresso */}
-        <div
-          style={{ marginLeft: '55px' }}
-          className="grid grid-cols-1 md:grid-cols-2 mt-4 gap-4"
-        >
-          <GraficoAnaliseMetas atualizar={contadorAtualizacao} />
-          <BarraDeProgresso atualizar={contadorAtualizacao} />
+        <div className=" p-3 flex w-9 bg-gray-200 border-round-2xl mt-4 gap-4">
+          <div className="w-full bg-white p-3 border-round-2xl pb-4">
+            <GraficoAnaliseMetas atualizar={contadorAtualizacao} />
+          </div>
+          <div
+            className="overflow-y-auto w-9  bg-white border-round-2xl h-21rem"
+            style={{
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
+            }}
+          >
+            <BarraDeProgresso atualizar={contadorAtualizacao} />
+          </div>
         </div>
       </main>
     </div>

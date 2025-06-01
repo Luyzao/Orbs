@@ -8,11 +8,17 @@ export default function GoalsList(goals: any) {
   }, [goals])
 
   return (
-    <div className="bg-gray-50 rounded-xl  font-comfortaa text-black py-5 px-5 shadow-xl">
+    <div className="bg-gray-50 rounded-xl  h-17rem font-comfortaa text-black py-5 px-5 shadow-xl">
       <div className="flex justify-between items-center mb-4">
         <h2 className="">Metas</h2>
       </div>
-      <ul className="space-y-3">
+      <ul
+        className="space-y-3 overflow-hidden overflow-y-auto  h-11rem"
+        style={{
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+        }}
+      >
         {goal &&
           goal?.map((meta: any, index: any) => (
             <li
