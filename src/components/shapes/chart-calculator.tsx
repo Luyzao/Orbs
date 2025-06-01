@@ -223,7 +223,7 @@ const Chart: React.FC<ChartProps> = ({ receitas, despesas, selectedDate }) => {
         </p>
         <hr className="w-full border-t border-[#C0C0C0] mb-3" />
 
-        <div className="w-full">
+        <div className="w-full max-h-[500px] overflow-y-auto">
           {carregando ? (
             <p className="font-comfortaa text-[#1C1B1F] text-sm">
               🔄 Carregando análise...
@@ -289,6 +289,7 @@ const Chart: React.FC<ChartProps> = ({ receitas, despesas, selectedDate }) => {
             </p>
           )}
         </div>
+
         <h2 className="font-comfortaa text-xs sm:text-ms md:text-sm lg:text-base xl:text-base text-start text-[#383577] md:mt-2 lg:mt-1 xl:mt-1">
           Saldo ao longo do mês
         </h2>
