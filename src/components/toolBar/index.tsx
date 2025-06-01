@@ -1,13 +1,13 @@
 import { RiMoneyDollarCircleLine } from 'react-icons/ri'
-import { LuMoon } from 'react-icons/lu'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import DatePicker from 'react-datepicker'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import 'react-datepicker/dist/react-datepicker.css'
 import { AiOutlineCalendar } from 'react-icons/ai'
 import { ptBR } from 'date-fns/locale'
 import { supabase } from 'lib/supabaseClient'
+import { getUserByID } from '@/services/user'
 
 interface ToolBarProps {
   selectedDate: Date | any
@@ -25,13 +25,31 @@ const ToolBar: React.FC<ToolBarProps> = ({
   const [recomendacao, setRecomendacao] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isOpen, setIsOpen] = useState(false)
+  const [user, setUser] = useState<any>()
+
+  useEffect(() => {
+    const getUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+      if (user)
+        await getUserByID(user.id)
+          .then((response) => [setUser(response.data.name)])
+          .catch((error) => {
+            console.error(error)
+          })
+      if (!user) {
+        return null
+      }
+    }
+    getUser()
+  }, [])
 
   const fetchUserFormsData = async () => {
     const {
       data: { user },
       error: userError,
     } = await supabase.auth.getUser()
-
     if (userError) {
       console.error('Erro ao obter usuário:', userError)
       return null
@@ -120,9 +138,7 @@ const ToolBar: React.FC<ToolBarProps> = ({
               className="bg-transparent text-xs md:text-sm w-full border-none focus:outline-none capitalize"
             />
           </div>
-          <div className="bg-gray-200 h-2rem w-2rem flex justify-center items-center rounded-md">
-            <LuMoon size={20} />
-          </div>
+
           <div>
             <Image
               src="/images/avatar.png"
@@ -145,9 +161,7 @@ const ToolBar: React.FC<ToolBarProps> = ({
           <span className="text-[#383577]">Bem-vindo à sua</span> órbita
           financeira!
         </h1>
-        <p className="text-xs sm:text-xs md:text-sm lg:text-sm ">
-          Olá, usuario123
-        </p>
+        <p className="text-xs sm:text-xs md:text-sm lg:text-sm ">Olá, {user}</p>
       </div>
 
       <div className="flex w-full sm:w-auto justify-center sm:justify-end items-center gap-2 text-black">
@@ -180,9 +194,7 @@ const ToolBar: React.FC<ToolBarProps> = ({
             </div>
           )}
         </div>
-        <div className="bg-gray-200 h-2rem w-2rem flex justify-center items-center rounded-md">
-          <LuMoon size={20} />
-        </div>
+
         <div>
           <Image
             src="/images/avatar.png"
