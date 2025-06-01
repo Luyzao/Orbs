@@ -1,30 +1,11 @@
-import { getUserByID } from '@/services/user'
-import { supabase } from 'lib/supabaseClient'
 import React, { useEffect, useState } from 'react'
 
-export default function GoalsList() {
+export default function GoalsList(goals: any) {
   const [goal, setGoal] = useState<any>()
-  console.log(goal)
 
   useEffect(() => {
-    const getUse = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-
-      if (user)
-        await getUserByID(user.id)
-          .then((response) => {
-            setGoal(response.data.goals)
-          })
-          .catch((error) => {
-            console.error(error)
-          })
-
-      if (!user) return
-    }
-    getUse()
-  }, [])
+    setGoal(goals.goals)
+  }, [goals])
 
   return (
     <div className="bg-gray-50 rounded-xl  font-comfortaa text-black py-5 px-5 shadow-xl">
@@ -33,7 +14,7 @@ export default function GoalsList() {
       </div>
       <ul className="space-y-3">
         {goal &&
-          goal.map((meta: any, index: any) => (
+          goal?.map((meta: any, index: any) => (
             <li
               key={index}
               className="bg-white  rounded-lg flex items-center justify-between shadow-sm px-3"

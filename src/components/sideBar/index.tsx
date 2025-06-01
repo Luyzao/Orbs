@@ -35,7 +35,7 @@ export default function SideBar() {
 
   useEffect(() => {
     const handleResize = () => {
-      setColapsado(window.innerWidth <= 919)
+      setColapsado(window.innerWidth <= 1596)
     }
     handleResize()
     window.addEventListener('resize', handleResize)

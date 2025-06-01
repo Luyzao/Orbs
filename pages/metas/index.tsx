@@ -41,7 +41,6 @@ export default function Home() {
             </div>
             <button
               onClick={() => {
-                console.log('Cliquei no botão!')
                 toggleTheme() // se quiser já ativar aqui
               }}
               className="flex items-center justify-center bg-gray-300 dark:bg-gray-700 shadow px-2 py-2 text-sm text-gray-800 hover:text-black"

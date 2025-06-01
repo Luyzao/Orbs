@@ -3,7 +3,6 @@ import ToolBar from '@/components/toolBar'
 import { FiPlusCircle } from 'react-icons/fi'
 import React, { useEffect, useRef, useState } from 'react'
 import { Calendar } from 'primereact/calendar'
-import { Nullable } from 'primereact/ts-helpers'
 import GoalsList from '@/components/goals'
 import DespesasList from '@/components/despesasList'
 import { supabase } from 'lib/supabaseClient'
@@ -15,7 +14,7 @@ import { Toast } from 'primereact/toast'
 import { postBalance, putBalance } from '@/services/balance'
 
 export default function Home() {
-  const [date, setDate] = useState<Nullable<Date>>(null)
+  const [date, setDate] = useState<any>(null)
   const [idUser, setIdUser] = useState<any>()
   const [user, setUser] = useState<any>()
   const [visible, setVisible] = useState(false)
@@ -70,7 +69,6 @@ export default function Home() {
         if (insertError) {
           console.error('Erro ao inserir usuário', insertError)
         } else {
-          console.log('Usuário inserido na tabela User')
           alert('Cadastro com sucesso!')
         }
       }
@@ -149,7 +147,6 @@ export default function Home() {
 
     return `${dia} / ${mesNomeado} / ${ano}`
   }
-
   return (
     <>
       <Toast ref={toast} />
@@ -196,7 +193,7 @@ export default function Home() {
           <div className="w-full flex flex-col gap-4 ">
             <div className="flex flex-col md:flex-row items-center gap-4 lg:gap-4 xl:gap-6">
               <div className=" p-4 bg-gray-50 text-black rounded-lg shadow-xl w-full xl:w-7">
-                <DoughnutChartDemo />
+                <DoughnutChartDemo expenses={user && user.expenses} />
               </div>
               <div className="flex flex-col items-center text-black w-12 md:w-4 bg-gray-50 rounded-xl shadow-xl gap-3 h-15rem justify-center">
                 <p className="text-4xl font-bol font-poppins">Saldo</p>
@@ -219,7 +216,7 @@ export default function Home() {
               </div>
             </div>
             <div className="xl:pr-5 ">
-              <DespesasList />
+              <DespesasList onSuccess={getUser} selectedDate={date} />
             </div>
           </div>
           <div className="flex flex-col gap-4">
@@ -235,7 +232,7 @@ export default function Home() {
               </div>
             </div>
             <div>
-              <GoalsList />
+              <GoalsList goals={user && user.goals} />
             </div>
           </div>
         </div>

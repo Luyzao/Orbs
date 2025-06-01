@@ -24,7 +24,6 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   }, [isDarkMode])
 
   const toggleTheme = () => {
-    console.log('Trocando o tema...')
     setIsDarkMode((prev) => !prev)
   }
 

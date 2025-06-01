@@ -35,15 +35,15 @@ const LoginRectangle: React.FC<LoginRectangleProps> = () => {
       .from('Forms')
       .select('id')
       .eq('userId', userId)
-      .single();
+      .single()
 
     if (error && error.code !== 'PGRST116') {
-      console.error('Erro ao buscar no Forms:', error);
-      throw error;
+      console.error('Erro ao buscar no Forms:', error)
+      throw error
     }
 
-    return !!data;
-  };
+    return !!data
+  }
 
   const handleLogin = async () => {
     if (validateForm()) {
@@ -59,17 +59,15 @@ const LoginRectangle: React.FC<LoginRectangleProps> = () => {
           alert('Login realizado com sucesso!')
           const {
             data: { user },
-          } = await supabase.auth.getUser();
+          } = await supabase.auth.getUser()
 
           if (user) {
-            const exists = await checkUserInForms(user.id);
+            const exists = await checkUserInForms(user.id)
 
             if (exists) {
-              console.log('Usuário já tem Forms');
-              window.location.href = '/';
+              window.location.href = '/'
             } else {
-              console.log('Usuário NÃO tem Forms');
-              window.location.href = '/forms';
+              window.location.href = '/forms'
             }
           }
         }
@@ -84,39 +82,38 @@ const LoginRectangle: React.FC<LoginRectangleProps> = () => {
     async function checkAndInsertUser() {
       const {
         data: { user },
-      } = await supabase.auth.getUser();
+      } = await supabase.auth.getUser()
 
-      if (!user) return;
+      if (!user) return
 
       // Verifica se já existe na tabela User
       const { data: existingUser, error } = await supabase
-        .from("User")
-        .select("*")
-        .eq("id", user.id)
-        .single();
+        .from('User')
+        .select('*')
+        .eq('id', user.id)
+        .single()
 
-      if (error && error.code !== "PGRST116") {
-        console.error("Erro ao buscar usuário", error);
-        return;
+      if (error && error.code !== 'PGRST116') {
+        console.error('Erro ao buscar usuário', error)
+        return
       }
 
       if (!existingUser) {
-        const { error: insertError } = await supabase.from("User").insert({
+        const { error: insertError } = await supabase.from('User').insert({
           id: user.id,
-          name: user.user_metadata.full_name || "Usuário",
-        });
+          name: user.user_metadata.full_name || 'Usuário',
+        })
 
         if (insertError) {
-          console.error("Erro ao inserir usuário", insertError);
+          console.error('Erro ao inserir usuário', insertError)
         } else {
-          console.log("Usuário inserido na tabela User");
-          alert("Cadastro com sucesso!");
+          alert('Cadastro com sucesso!')
         }
       }
     }
 
-    checkAndInsertUser();
-  }, []);
+    checkAndInsertUser()
+  }, [])
 
   return (
     <div
@@ -203,7 +200,6 @@ const LoginRectangle: React.FC<LoginRectangleProps> = () => {
           >
             Login
           </button>
-
         </div>
       </div>
     </div>

@@ -20,7 +20,12 @@ type ExpenseItem = {
   categoryColor: string
 }
 
-export default function DespesasList() {
+type Props = {
+  onSuccess?: () => void
+  selectedDate: Date | null
+}
+
+export default function DespesasList({ onSuccess, selectedDate }: Props) {
   const [visibleExpenses, setVisibleExpenses] = useState(false)
   const [titulo, setTitulo] = useState('')
   const [valor, setValor] = useState('')
@@ -64,6 +69,33 @@ export default function DespesasList() {
     setCategoria(null)
     setCredito(false)
   }
+
+  useEffect(() => {
+    const fetchExpenses = async () => {
+      setLoading(true)
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+      if (!user) return
+
+      setIdUser(user.id)
+
+      const allExpenses = await getExpensesByUserId(user.id)
+      if (!allExpenses || !allExpenses.data) return
+
+      // Se tiver data selecionada, filtra até esse dia
+      const filtered = selectedDate
+        ? allExpenses.data.filter(
+            (item: any) => new Date(item.date) <= selectedDate,
+          )
+        : allExpenses.data
+
+      setExpenses(filtered)
+      setLoading(false)
+    }
+
+    fetchExpenses()
+  }, [selectedDate])
 
   // Buscar usuário e categorias
   useEffect(() => {
@@ -130,6 +162,7 @@ export default function DespesasList() {
       setLoading(true)
       await postExpense(Data)
         .then(() => {
+          if (onSuccess) onSuccess()
           showSuccess()
         })
         .catch(() => {
@@ -153,6 +186,7 @@ export default function DespesasList() {
     qtdParcelas,
     parcelaAtual,
     idUser,
+    onSuccess,
   ])
 
   // Filtrar despesas por texto

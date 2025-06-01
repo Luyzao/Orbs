@@ -1,17 +1,56 @@
 import React, { useEffect, useState } from 'react'
 import { Chart } from 'primereact/chart'
 
-export default function DoughnutChartDemo() {
+interface Expense {
+  amount: number
+  category: {
+    id: string
+    name: string
+    color: string
+  }
+}
+
+interface Props {
+  expenses: Expense[]
+}
+
+export default function DoughnutChartDemo({ expenses }: Props) {
   const [chartData, setChartData] = useState({})
   const [chartOptions, setChartOptions] = useState({})
 
   useEffect(() => {
-    const data = {
-      labels: ['Educação', 'Transporte', 'Beleza'],
+    if (!expenses || expenses.length === 0) return
+
+    // Agrupar e somar os valores por categoria
+    const categoryMap = new Map<
+      string,
+      { name: string; color: string; total: number }
+    >()
+
+    for (const expense of expenses) {
+      const categoryId = expense.category.id
+      const existing = categoryMap.get(categoryId)
+      if (existing) {
+        existing.total += expense.amount
+      } else {
+        categoryMap.set(categoryId, {
+          name: expense.category.name,
+          color: expense.category.color,
+          total: expense.amount,
+        })
+      }
+    }
+
+    const labels = Array.from(categoryMap.values()).map((cat) => cat.name)
+    const data = Array.from(categoryMap.values()).map((cat) => cat.total)
+    const colors = Array.from(categoryMap.values()).map((cat) => cat.color)
+
+    const chartData = {
+      labels,
       datasets: [
         {
-          data: [40, 20, 16],
-          backgroundColor: ['#7B61FF', '#2C2956', '#D11FB6'],
+          data,
+          backgroundColor: colors,
           borderWidth: 0,
           cutout: '50%',
         },
@@ -30,9 +69,12 @@ export default function DoughnutChartDemo() {
             pointStyle: 'circle',
             generateLabels: function (chart: any) {
               const dataset = chart.data.datasets[0]
-              return chart.data.labels.map((label: any, i: any) => {
+              const total = dataset.data.reduce(
+                (a: number, b: number) => a + b,
+                0,
+              )
+              return chart.data.labels.map((label: string, i: number) => {
                 const value = dataset.data[i]
-                const total = dataset.data.reduce((a: any, b: any) => a + b, 0)
                 const percentage = Math.round((value / total) * 100)
                 return {
                   text: `${label}  ${percentage}%`,
@@ -47,9 +89,9 @@ export default function DoughnutChartDemo() {
       },
     }
 
-    setChartData(data)
+    setChartData(chartData)
     setChartOptions(options)
-  }, [])
+  }, [expenses])
 
   return (
     <div className="card font-comfortaa flex flex-col justify-content-center rounded-md gap-3">
@@ -58,7 +100,7 @@ export default function DoughnutChartDemo() {
         type="doughnut"
         data={chartData}
         options={chartOptions}
-        className="gap-5 w-[300px] md:w-[280px] lg:w-[250px] xl:w-[350px]  h-[150px]"
+        className="gap-5 w-[300px] md:w-[480px] lg:w-[260px] xl:w-[450px]  h-[150px]"
       />
     </div>
   )
