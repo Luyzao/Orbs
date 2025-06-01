@@ -117,7 +117,7 @@ const ToolBar: React.FC<ToolBarProps> = ({
               dateFormat="MMMM"
               showMonthYearPicker
               locale={ptBR}
-              className="bg-transparent text-xs md:text-sm w-full border-none focus:outline-none"
+              className="bg-transparent text-xs md:text-sm w-full border-none focus:outline-none capitalize"
             />
           </div>
           <div className="bg-gray-200 h-2rem w-2rem flex justify-center items-center rounded-md">
