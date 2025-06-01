@@ -105,3 +105,11 @@ input[type='number'] {
   border-radius: 0.5rem;
 }
 
+/* styles/globals.css */
+.hide-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
