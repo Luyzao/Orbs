@@ -1,18 +1,51 @@
-import type { AppProps } from "next/app";
-import "primeflex/primeflex.css";
-import "primereact/resources/themes/saga-blue/theme.css";
-import "primereact/resources/primereact.min.css";
-import "primeicons/primeicons.css";
-import "../src/styles/globals.css";
+import type { AppProps } from 'next/app'
+import { useRouter } from 'next/router'
+import { useEffect } from 'react'
+import 'primeflex/primeflex.css'
+import 'primereact/resources/themes/saga-blue/theme.css'
+import 'primereact/resources/primereact.min.css'
+import 'primeicons/primeicons.css'
+import '../src/styles/globals.css'
+import SideBar from '@/components/sideBar'
+import { AuthProvider, useAuth } from '@/context/AuthContext'
 
 function MyApp({ Component, pageProps }: AppProps) {
-  return (
-    <>
-      <main className="bg-purple-300">
-        <Component {...pageProps} />
-      </main>
-    </>
+  const router = useRouter()
+  const hideSidebar = ['/auth', '/forms'].some(prefix =>
+    router.pathname.startsWith(prefix)
   );
+
+  return (
+    <AuthProvider>
+      <MainContent
+        Component={Component}
+        pageProps={pageProps}
+        hideSidebar={hideSidebar}
+      />
+    </AuthProvider>
+  )
 }
 
-export default MyApp;
+function MainContent({ Component, pageProps, hideSidebar }: any) {
+  const router = useRouter()
+  const { user, loading } = useAuth()
+  const isAuthPage = router.pathname.startsWith('/auth')
+
+  useEffect(() => {
+    if (loading) return
+    if (!isAuthPage && !user) {
+      router.push('/auth/login')
+    }
+  }, [user, loading, isAuthPage, router])
+
+  if (loading) return null
+
+  return (
+    <main className={`bg-white ${!hideSidebar ? 'flex' : ''}`}>
+      {!hideSidebar && <SideBar />}
+      <Component {...pageProps} />
+    </main>
+  )
+}
+
+export default MyApp

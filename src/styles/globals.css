@@ -1,11 +1,14 @@
+@import 'primereact/resources/themes/lara-light-indigo/theme.css';
+@import 'primereact/resources/primereact.min.css';
+@import 'primeicons/primeicons.css';
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&display=swap');
+
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-* {
-  margin: 0;
-  padding: 0;
-}
 
 
 :root {
@@ -40,4 +43,72 @@ body {
   animation: spin 2s linear infinite;
 }
 
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background-color: #E1E1E1;
+  border-radius: 10px;
+  margin: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+  margin: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #2418B8;
+  border-radius: 10px;
+  margin: 3px;
+}
+
+/* globals.css */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+.p-radiobutton .p-radiobutton-box {
+  border: 3px solid white !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  width: 20px;
+  height: 20px;
+}
+
+.p-radiobutton .p-radiobutton-box.p-highlight {
+  background-color: white !important;
+  border-color: white !important;
+}
+
+.p-radiobutton .p-radiobutton-box.p-highlight::before {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.custom-progressbar .p-progressbar-value {
+  background-color: #5C4FFF !important;
+  height: 14px !important;
+}
+
+.custom-progressbar {
+  height: 14px !important;
+  background-color: #FFFFFF;
+  border-radius: 0.5rem;
+}
+
+/* styles/globals.css */
+.hide-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
 
