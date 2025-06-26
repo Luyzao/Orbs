@@ -17,7 +17,7 @@ O aplicativo foi desenvolvido para a matéria de "projeto integrador", para o qu
 A ideia foi desenvolver uma ferramenta para organização de gastos, metas, e salários/rendas, atrelados a dicas feitas pela inteligência artificial e conteúdos educativos. O nome "Orbs" vem da ideia de criar uma nova órbita espacial, que englobe os gastos, metas e rendas, de forma equilibrada, assim como os planetas ao redor do centro de gravidade; no Orbs tudo gira entorno da organização financeira.  
 
 ### ✒️ Objetivo
-O principal objetivo da aplicação é a busca do equilíbrio de todos os setores da vida ao setor financeiro, não delimitando nossos usuários por sua falta de desorganização ou comprometimento.
+O principal objetivo da aplicação é a busca do equilíbrio de todos os setores da vida ao financeiro, não delimitando nossos usuários por sua falta de desorganização ou comprometimento.
 
 Acreditamos que a combinação de metas pré-estabelecidas e peparo antes de realizar qualquer coisa, nos traz ótimos resultados e muita segurança, mesmo vivendo uma fase da vida cheia de incertezas e escolhas infinitas.
 
