@@ -43,8 +43,14 @@ O aplicativo conta com funcionalidades como:
 ## 🎨 Interface gráfica
 Algumas telas desenvolvidas para o aplicativo.
 
-![Wireframe - 1]()
-![Wireframe - 2]()
+![TELA CADASTRO](https://github.com/user-attachments/assets/cf85a983-ef28-419a-8506-57fe9b9fe60c)
+![TELA LOGIN](https://github.com/user-attachments/assets/9ab30868-1b7d-4438-8706-a89be6918bf9)
+![TELA INICIAL](https://github.com/user-attachments/assets/859007d4-19f8-4e10-91cf-50a9d357af18)
+![TELA EDUCAÇÃO](https://github.com/user-attachments/assets/f3b06b9d-4ca3-4d0b-8430-af9d22da9169)
+![TELA METAS](https://github.com/user-attachments/assets/5c9325e5-8dfd-4f38-a252-5d61a3475f11)
+![TELA NOVA META](https://github.com/user-attachments/assets/d557e3de-4068-493b-8445-eb925ece6ec2)
+![TELA CALCULADORA](https://github.com/user-attachments/assets/a0a841ff-0cd5-4038-a9bb-926dc14ee6a1)
+
 
 
 
