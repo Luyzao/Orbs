@@ -60,7 +60,7 @@ Algumas telas desenvolvidas para o aplicativo.
 [![My Skills](https://skillicons.dev/icons?i=react,nodejs,prisma,supabase,,github,figma,ai)](https://skillicons.dev)
 
 - React, para UI.
-- Node para o Back-end.
+- Node para o Back-end, repositório do back: https://github.com/Luyzao/Orbs-BackEnd.
 - API do chatgpt, para treinamento e geração de scripts de análises financeiras pela IA.
 - Supabase e Prisma, para gerenciamento e arquitetura do banco de dados.
 - GitHub para versionamento de código.
